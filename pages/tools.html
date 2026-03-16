@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>AI Tools - AmkyawDev AI</title>
+    <link rel="stylesheet" href="../css/bulma.css">
+    <link rel="stylesheet" href="../css/tools.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: transparent;
+            color: #fff;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #1a1a24;
+            --bg-tertiary: #2a2a35;
+            --text-primary: #fff;
+            --text-secondary: #a0a0b0;
+            --text-muted: #6b6b7b;
+            --accent: #19c37d;
+            --border: #2a2a35;
+        }
+        
+        [data-theme="chatgpt"] {
+            --bg-primary: #343541;
+            --bg-secondary: #40414f;
+            --bg-tertiary: #444654;
+            --text-primary: #ececf1;
+            --accent: #19c37d;
+            --border: #4d4d4f;
+        }
+        
+        .tools-container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-primary);
+        }
+        
+        /* ===== STATUS LINE ===== */
+        .status-line {
+            height: 28px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            font-size: 10px;
+            color: var(--text-muted);
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+        
+        .status-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .status-item i {
+            font-size: 9px;
+            color: var(--accent);
+        }
+        
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .tools-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+        
+        /* ===== TOOL CARDS ===== */
+        .tool-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .tool-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent);
+        }
+        
+        .tool-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(25, 195, 125, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+        
+        .tool-icon i {
+            font-size: 20px;
+            color: var(--accent);
+        }
+        
+        .tool-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        
+        .tool-description {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+        
+        .tool-tags {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        
+        .tool-tag {
+            padding: 4px 8px;
+            background: var(--bg-tertiary);
+            border-radius: 20px;
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+        
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s;
+        }
+        
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h3 {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        .modal-header h3 i {
+            color: var(--accent);
+            margin-right: 8px;
+        }
+        
+        .modal-close {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        /* ===== TOOL INPUTS ===== */
+        .tool-input {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 13px;
+            margin-bottom: 16px;
+            resize: vertical;
+        }
+        
+        .tool-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .tool-select {
+            width: 100%;
+            padding: 10px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+        
+        .tool-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--accent);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-bottom: 16px;
+        }
+        
+        .tool-btn:hover {
+            opacity: 0.9;
+        }
+        
+        .tool-output {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            color: var(--text-primary);
+            font-size: 13px;
+            line-height: 1.6;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        /* ===== FIELD GROUP ===== */
+        .field-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        
+        .field-group select {
+            flex: 1;
+        }
+        
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .field-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="tools-container" x-data="toolsApp()" x-init="init()">
+        <!-- Status Line -->
+        <div class="status-line">
+            <div class="status-left">
+                <div class="status-item">
+                    <i class="fas fa-tools"></i>
+                    <span>AI Tools</span>
+                </div>
+                <div class="status-item">
+                    <i class="fas fa-circle"></i>
+                    <span>6 tools</span>
+                </div>
+            </div>
+            <div class="status-right">
+                <span>Select a tool</span>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="tools-grid">
+                <!-- Summarize -->
+                <div class="tool-card" @click="openTool('summarize')">
+                    <div class="tool-icon">
+                        <i class="fas fa-compress-alt"></i>
+                    </div>
+                    <h3 class="tool-title">Text Summarizer</h3>
+                    <p class="tool-description">Summarize long articles, documents, or any text into concise key points.</p>
+                    <div class="tool-tags">
+                        <span class="tool-tag">AI</span>
+                        <span class="tool-tag">Productivity</span>
+                    </div>
+                </div>
+                
+                <!-- Translate -->
+                <div class="tool-card" @click="openTool('translate')">
+                    <div class="tool-icon">
+                        <i class="fas fa-language"></i>
+                    </div>
+                    <h3 class="tool-title">AI Translator</h3>
+                    <p class="tool-description">Translate text between multiple languages with high accuracy.</p>
+                    <div class="tool-tags">
+                        <span class="tool-tag">Languages</span>
+                        <span class="tool-tag">6+</span>
+                    </div>
+                </div>
+                
+                <!-- Grammar -->
+                <div class="tool-card" @click="openTool('grammar')">
+                    <div class="tool-icon">
+                        <i class="fas fa-spell-check"></i>
+                    </div>
+                    <h3 class="tool-title">Grammar Checker</h3>
+                    <p class="tool-description">Check and improve your writing with advanced grammar correction.</p>
+                    <div class="tool-tags">
+                        <span class="tool-tag">Writing</span>
+                        <span class="tool-tag">Education</span>
+                    </div>
+                </div>
+                
+                <!-- Sentiment -->
+                <div class="tool-card" @click="openTool('sentiment')">
+                    <div class="tool-icon">
+                        <i class="fas fa-smile"></i>
+                    </div>
+                    <h3 class="tool-title">Sentiment Analysis</h3>
+                    <p class="tool-description">Analyze the emotional tone and sentiment of any text.</p>
+                    <div class="tool-tags">
+                        <span class="tool-tag">Analysis</span>
+                        <span class="tool-tag">Psychology</span>
+                    </div>
+                </div>
+                
+                <!-- Paraphrase -->
+                <div class="tool-card" @click="openTool('paraphrase')">
+                    <div class="tool-icon">
+                        <i class="fas fa-pen-fancy"></i>
+                    </div>
+                    <h3 class="tool-title">Paraphrasing Tool</h3>
+                    <p class="tool-description">Rewrite text while maintaining the original meaning.</p>
+                    <div class="tool-tags">
+                        <span class="tool-tag">Writing</span>
+                        <span class="tool-tag">Creative</span>
+                    </div>
+                </div>
+                
+                <!-- Keywords -->
+                <div class="tool-card" @click="openTool('keywords')">
+                    <div class="tool-icon">
+                        <i class="fas fa-key"></i>
+                    </div>
+                    <h3 class="tool-title">Keyword Extractor</h3>
+                    <p class="tool-description">Extract important keywords and phrases from text.</p>
+                    <div class="tool-tags">
+                        <span class="tool-tag">SEO</span>
+                        <span class="tool-tag">Analysis</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal -->
+        <div class="modal-overlay" :class="{ 'active': activeTool }" @click.self="closeTool">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3><i :class="getToolIcon(activeTool)"></i> <span x-text="getToolTitle(activeTool)"></span></h3>
+                    <button class="modal-close" @click="closeTool">✕</button>
+                </div>
+                
+                <div class="modal-body">
+                    <!-- Summarize Tool -->
+                    <template x-if="activeTool === 'summarize'">
+                        <div>
+                            <textarea class="tool-input" x-model="summarizeText" rows="4" placeholder="Paste text to summarize..."></textarea>
+                            <button class="tool-btn" @click="summarize" :disabled="!summarizeText">Summarize</button>
+                            <div class="tool-output" x-show="summaryResult" x-text="summaryResult"></div>
+                        </div>
+                    </template>
+                    
+                    <!-- Translate Tool -->
+                    <template x-if="activeTool === 'translate'">
+                        <div>
+                            <div class="field-group">
+                                <select class="tool-select" x-model="translateFrom">
+                                    <option value="auto">Auto Detect</option>
+                                    <option value="en">English</option>
+                                    <option value="my">Burmese</option>
+                                    <option value="th">Thai</option>
+                                    <option value="zh">Chinese</option>
+                                    <option value="ja">Japanese</option>
+                                    <option value="ko">Korean</option>
+                                </select>
+                                <select class="tool-select" x-model="translateTo">
+                                    <option value="en">English</option>
+                                    <option value="my">Burmese</option>
+                                    <option value="th">Thai</option>
+                                    <option value="zh">Chinese</option>
+                                    <option value="ja">Japanese</option>
+                                    <option value="ko">Korean</option>
+                                </select>
+                            </div>
+                            <textarea class="tool-input" x-model="translateText" rows="3" placeholder="Text to translate..."></textarea>
+                            <button class="tool-btn" @click="translate" :disabled="!translateText">Translate</button>
+                            <div class="tool-output" x-show="translationResult" x-text="translationResult"></div>
+                        </div>
+                    </template>
+                    
+                    <!-- Grammar Tool -->
+                    <template x-if="activeTool === 'grammar'">
+                        <div>
+                            <textarea class="tool-input" x-model="grammarText" rows="4" placeholder="Enter text to check grammar..."></textarea>
+                            <button class="tool-btn" @click="checkGrammar" :disabled="!grammarText">Check Grammar</button>
+                            <div class="tool-output" x-show="grammarResult" x-html="grammarResult"></div>
+                        </div>
+                    </template>
+                    
+                    <!-- Sentiment Tool -->
+                    <template x-if="activeTool === 'sentiment'">
+                        <div>
+                            <textarea class="tool-input" x-model="sentimentText" rows="3" placeholder="Enter text for sentiment analysis..."></textarea>
+                            <button class="tool-btn" @click="analyzeSentiment" :disabled="!sentimentText">Analyze</button>
+                            <div class="tool-output" x-show="sentimentResult">
+                                <p><strong>Sentiment:</strong> <span x-text="sentimentResult.sentiment"></span></p>
+                                <p><strong>Score:</strong> <span x-text="sentimentResult.score"></span></p>
+                                <p><strong>Confidence:</strong> <span x-text="sentimentResult.confidence"></span></p>
+                            </div>
+                        </div>
+                    </template>
+                    
+                    <!-- Paraphrase Tool -->
+                    <template x-if="activeTool === 'paraphrase'">
+                        <div>
+                            <textarea class="tool-input" x-model="paraphraseText" rows="4" placeholder="Enter text to paraphrase..."></textarea>
+                            <button class="tool-btn" @click="paraphrase" :disabled="!paraphraseText">Paraphrase</button>
+                            <div class="tool-output" x-show="paraphraseResult" x-text="paraphraseResult"></div>
+                        </div>
+                    </template>
+                    
+                    <!-- Keywords Tool -->
+                    <template x-if="activeTool === 'keywords'">
+                        <div>
+                            <textarea class="tool-input" x-model="keywordsText" rows="3" placeholder="Enter text to extract keywords..."></textarea>
+                            <button class="tool-btn" @click="extractKeywords" :disabled="!keywordsText">Extract</button>
+                            <div class="tool-output" x-show="keywordsResult.length">
+                                <div class="tool-tags" style="justify-content: center;">
+                                    <template x-for="kw in keywordsResult">
+                                        <span class="tool-tag" style="background: var(--accent); color: white;" x-text="kw"></span>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function toolsApp() {
+            return {
+                activeTool: null,
+                summarizeText: '',
+                summaryResult: '',
+                translateText: '',
+                translateFrom: 'auto',
+                translateTo: 'en',
+                translationResult: '',
+                grammarText: '',
+                grammarResult: '',
+                sentimentText: '',
+                sentimentResult: null,
+                paraphraseText: '',
+                paraphraseResult: '',
+                keywordsText: '',
+                keywordsResult: [],
+                
+                init() {
+                    // Listen for theme changes from parent
+                    window.addEventListener('message', (event) => {
+                        if (event.data && event.data.type === 'global-theme-change' && event.data.theme) {
+                            document.documentElement.setAttribute('data-theme', event.data.theme);
+                        }
+                    });
+                },
+                
+                openTool(tool) {
+                    this.activeTool = tool;
+                    this.resetToolData(tool);
+                },
+                
+                closeTool() {
+                    this.activeTool = null;
+                },
+                
+                resetToolData(tool) {
+                    switch(tool) {
+                        case 'summarize': this.summaryResult = ''; break;
+                        case 'translate': this.translationResult = ''; break;
+                        case 'grammar': this.grammarResult = ''; break;
+                        case 'sentiment': this.sentimentResult = null; break;
+                        case 'paraphrase': this.paraphraseResult = ''; break;
+                        case 'keywords': this.keywordsResult = []; break;
+                    }
+                },
+                
+                getToolIcon(tool) {
+                    const icons = {
+                        summarize: 'fa-compress-alt',
+                        translate: 'fa-language',
+                        grammar: 'fa-spell-check',
+                        sentiment: 'fa-smile',
+                        paraphrase: 'fa-pen-fancy',
+                        keywords: 'fa-key'
+                    };
+                    return icons[tool] || 'fa-toolbox';
+                },
+                
+                getToolTitle(tool) {
+                    const titles = {
+                        summarize: 'Text Summarizer',
+                        translate: 'AI Translator',
+                        grammar: 'Grammar Checker',
+                        sentiment: 'Sentiment Analysis',
+                        paraphrase: 'Paraphrasing Tool',
+                        keywords: 'Keyword Extractor'
+                    };
+                    return titles[tool] || 'Tool';
+                },
+                
+                summarize() {
+                    if (!this.summarizeText) return;
+                    
+                    // Simulate summarization
+                    const words = this.summarizeText.split(' ');
+                    if (words.length > 20) {
+                        this.summaryResult = words.slice(0, 20).join(' ') + '... [Summarized version of the text]';
+                    } else {
+                        this.summaryResult = this.summarizeText + ' [This is the summarized version]';
+                    }
+                },
+                
+                translate() {
+                    if (!this.translateText) return;
+                    
+                    // Simulate translation
+                    const languages = {
+                        en: 'English',
+                        my: 'Burmese',
+                        th: 'Thai',
+                        zh: 'Chinese',
+                        ja: 'Japanese',
+                        ko: 'Korean'
+                    };
+                    
+                    this.translationResult = `[${languages[this.translateTo] || 'English'} translation]\n\n` + 
+                                            this.translateText + `\n\n(Simulated translation to ${languages[this.translateTo]})`;
+                },
+                
+                checkGrammar() {
+                    if (!this.grammarText) return;
+                    
+                    // Simulate grammar check
+                    const corrections = [
+                        '✓ No major grammar issues detected',
+                        '✓ Spelling looks good',
+                        '✗ Consider adding more punctuation',
+                        '✓ Sentence structure is clear'
+                    ];
+                    
+                    this.grammarResult = corrections.map(c => `<div style="margin: 5px 0">${c}</div>`).join('');
+                },
+                
+                analyzeSentiment() {
+                    if (!this.sentimentText) return;
+                    
+                    // Simulate sentiment analysis
+                    const sentiments = ['Positive', 'Neutral', 'Negative'];
+                    const random = Math.floor(Math.random() * 3);
+                    
+                    this.sentimentResult = {
+                        sentiment: sentiments[random],
+                        score: (Math.random() * 2 - 1).toFixed(2),
+                        confidence: (Math.random() * 0.5 + 0.5).toFixed(2)
+                    };
+                },
+                
+                paraphrase() {
+                    if (!this.paraphraseText) return;
+                    
+                    // Simulate paraphrasing
+                    const sentences = this.paraphraseText.split('.');
+                    if (sentences.length > 1) {
+                        sentences.reverse();
+                        this.paraphraseResult = sentences.join('. ') + ' [Paraphrased version]';
+                    } else {
+                        this.paraphraseResult = this.paraphraseText.split(' ').reverse().join(' ') + ' [Paraphrased]';
+                    }
+                },
+                
+                extractKeywords() {
+                    if (!this.keywordsText) return;
+                    
+                    // Simulate keyword extraction
+                    const words = this.keywordsText.toLowerCase()
+                        .replace(/[^\w\s]/g, '')
+                        .split(/\s+/)
+                        .filter(w => w.length > 3);
+                    
+                    const uniqueWords = [...new Set(words)];
+                    const keywords = uniqueWords
+                        .sort(() => 0.5 - Math.random())
+                        .slice(0, 5);
+                    
+                    this.keywordsResult = keywords;
+                }
+            };
+        }
+    </script>
+</body>
+</html>
