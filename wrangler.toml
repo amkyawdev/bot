@@ -1,0 +1,12 @@
+name = "amkyaw-ai-worker"
+main = "bot/worker/worker.js"
+compatibility_date = "2026-03-16"
+
+workers_dev = true
+
+[vars]
+APP_NAME = "Amkyaw AI"
+ENV = "production"
+
+[observability]
+enabled = true
