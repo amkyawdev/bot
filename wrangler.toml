@@ -1,4 +1,4 @@
-name = "amkyaw-ai-worker"
+name = "oh"
 main = "bot/worker/worker.js"
 compatibility_date = "2026-03-16"
 
