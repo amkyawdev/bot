@@ -2,7 +2,7 @@
 
 const ApiService = {
     // ===== BASE URL =====
-    baseUrl: 'https://oh.amkai.workers.dev',
+    baseUrl: 'https://my.amkai.workers.dev',
     
     // ===== DEFAULT HEADERS =====
     headers: {
