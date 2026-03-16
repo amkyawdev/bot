@@ -1,4 +1,4 @@
-// API Service for Cloudflare Worker
+// API Service for AmkyawDev AI
 const ApiService = {
     // ===== BASE URL =====
     baseUrl: 'https://oh.amkai.workers.dev',
@@ -6,7 +6,8 @@ const ApiService = {
     // ===== DEFAULT HEADERS =====
     headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
     },
 
     // ===== REQUEST TIMEOUT =====
@@ -14,24 +15,30 @@ const ApiService = {
 
     // ===== HELPER METHOD FOR MAKING REQUESTS =====
     async request(endpoint, options = {}) {
-        const url = `${this.baseUrl}${endpoint}`;
+        const url = endpoint.startsWith('http') ? endpoint : `${this.baseUrl}${endpoint}`;
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), this.timeout);
         
+        // Add timestamp to prevent caching
+        const separator = url.includes('?') ? '&' : '?';
+        const finalUrl = `${url}${separator}_t=${Date.now()}`;
+        
         try {
-            const response = await fetch(url, {
+            const response = await fetch(finalUrl, {
                 ...options,
                 headers: {
                     ...this.headers,
                     ...options.headers
                 },
-                signal: controller.signal
+                signal: controller.signal,
+                cache: 'no-cache'
             });
 
             clearTimeout(timeoutId);
 
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                const errorText = await response.text().catch(() => '');
+                throw new Error(`HTTP error! status: ${response.status}, message: ${errorText.substring(0, 100)}`);
             }
 
             const data = await response.json();
@@ -47,12 +54,14 @@ const ApiService = {
             let errorMessage = error.message;
             if (error.name === 'AbortError') {
                 errorMessage = 'Request timeout - please try again';
+            } else if (error.message.includes('Failed to fetch')) {
+                errorMessage = 'Network error - please check your connection';
             }
             
             return {
                 success: false,
                 error: errorMessage,
-                status: error.status || 500
+                status: error.status || 0
             };
         }
     },
@@ -73,7 +82,9 @@ const ApiService = {
         },
 
         // Stream message (for real-time responses)
-        async streamMessage(message, onChunk, onComplete, onError) {
+        async streamMessage(message, callbacks = {}) {
+            const { onChunk, onComplete, onError } = callbacks;
+            
             try {
                 const response = await fetch(`${ApiService.baseUrl}/api/chat/stream`, {
                     method: 'POST',
@@ -81,18 +92,24 @@ const ApiService = {
                     body: JSON.stringify({ message })
                 });
 
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
                 const reader = response.body.getReader();
                 const decoder = new TextDecoder();
+                let fullResponse = '';
 
                 while (true) {
                     const { done, value } = await reader.read();
                     if (done) {
-                        if (onComplete) onComplete();
+                        if (onComplete) onComplete(fullResponse);
                         break;
                     }
                     
-                    const chunk = decoder.decode(value);
-                    if (onChunk) onChunk(chunk);
+                    const chunk = decoder.decode(value, { stream: true });
+                    fullResponse += chunk;
+                    if (onChunk) onChunk(chunk, fullResponse);
                 }
             } catch (error) {
                 console.error('Stream error:', error);
@@ -101,15 +118,37 @@ const ApiService = {
         },
 
         // Get chat history
-        async getHistory(limit = 50) {
-            return ApiService.request(`/api/chat/history?limit=${limit}`);
+        async getHistory(limit = 50, chatId = null) {
+            const url = chatId ? `/api/chat/history?limit=${limit}&chatId=${chatId}` : `/api/chat/history?limit=${limit}`;
+            return ApiService.request(url);
         },
 
         // Clear chat history
-        async clearHistory() {
-            return ApiService.request('/api/chat/history', {
+        async clearHistory(chatId = null) {
+            const url = chatId ? `/api/chat/history?chatId=${chatId}` : '/api/chat/history';
+            return ApiService.request(url, {
                 method: 'DELETE'
             });
+        },
+
+        // Save chat
+        async saveChat(chatId, messages, title) {
+            return ApiService.request('/api/chat/save', {
+                method: 'POST',
+                body: JSON.stringify({ chatId, messages, title })
+            });
+        },
+
+        // Delete chat
+        async deleteChat(chatId) {
+            return ApiService.request(`/api/chat/${chatId}`, {
+                method: 'DELETE'
+            });
+        },
+
+        // Get all chats
+        async getAllChats() {
+            return ApiService.request('/api/chat/list');
         }
     },
 
@@ -136,8 +175,16 @@ const ApiService = {
         },
 
         // Get user's generated images
-        async getUserImages() {
-            return ApiService.request('/api/user-images');
+        async getUserImages(limit = 50) {
+            return ApiService.request(`/api/user-images?limit=${limit}`);
+        },
+
+        // Save image
+        async saveImage(imageData) {
+            return ApiService.request('/api/images', {
+                method: 'POST',
+                body: JSON.stringify(imageData)
+            });
         },
 
         // Delete image
@@ -214,6 +261,19 @@ const ApiService = {
                 method: 'POST',
                 body: JSON.stringify({ code, from: fromLang, to: toLang })
             });
+        },
+
+        // Save code snippet
+        async saveSnippet(code, language, name) {
+            return ApiService.request('/api/snippets', {
+                method: 'POST',
+                body: JSON.stringify({ code, language, name })
+            });
+        },
+
+        // Get saved snippets
+        async getSnippets() {
+            return ApiService.request('/api/snippets');
         }
     },
 
@@ -292,6 +352,26 @@ const ApiService = {
                 method: 'POST',
                 body: JSON.stringify({ question, context })
             });
+        },
+
+        // Spell check
+        async spellCheck(text) {
+            return ApiService.request('/api/spell-check', {
+                method: 'POST',
+                body: JSON.stringify({ text })
+            });
+        },
+
+        // Text to speech
+        async textToSpeech(text, options = {}) {
+            return ApiService.request('/api/tts', {
+                method: 'POST',
+                body: JSON.stringify({
+                    text,
+                    voice: options.voice || 'en-US',
+                    speed: options.speed || 1.0
+                })
+            });
         }
     },
 
@@ -348,6 +428,18 @@ const ApiService = {
             return ApiService.request('/api/user/account', {
                 method: 'DELETE'
             });
+        },
+
+        // Get API key
+        async getApiKey() {
+            return ApiService.request('/api/user/apikey');
+        },
+
+        // Regenerate API key
+        async regenerateApiKey() {
+            return ApiService.request('/api/user/apikey', {
+                method: 'POST'
+            });
         }
     },
 
@@ -371,22 +463,37 @@ const ApiService = {
         // Get supported models
         async getModels() {
             return ApiService.request('/api/models');
+        },
+
+        // Get system metrics
+        async getMetrics() {
+            return ApiService.request('/api/metrics');
+        },
+
+        // Get announcements
+        async getAnnouncements() {
+            return ApiService.request('/api/announcements');
         }
     },
 
     // ===== STORAGE API =====
     storage: {
         // Save data
-        async save(key, data) {
+        async save(key, data, options = {}) {
             return ApiService.request('/api/storage/save', {
                 method: 'POST',
-                body: JSON.stringify({ key, data })
+                body: JSON.stringify({ 
+                    key, 
+                    data,
+                    ttl: options.ttl || null,
+                    public: options.public || false
+                })
             });
         },
 
         // Load data
         async load(key) {
-            return ApiService.request(`/api/storage/load?key=${key}`);
+            return ApiService.request(`/api/storage/load?key=${encodeURIComponent(key)}`);
         },
 
         // Delete data
@@ -398,8 +505,113 @@ const ApiService = {
         },
 
         // List all keys
-        async list() {
-            return ApiService.request('/api/storage/list');
+        async list(prefix = '') {
+            return ApiService.request(`/api/storage/list?prefix=${encodeURIComponent(prefix)}`);
+        },
+
+        // Get storage usage
+        async getUsage() {
+            return ApiService.request('/api/storage/usage');
+        },
+
+        // Clear all data
+        async clear() {
+            return ApiService.request('/api/storage/clear', {
+                method: 'DELETE'
+            });
+        }
+    },
+
+    // ===== UPLOAD API =====
+    upload: {
+        // Upload file
+        async uploadFile(file, onProgress = null) {
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            try {
+                const xhr = new XMLHttpRequest();
+                
+                const promise = new Promise((resolve, reject) => {
+                    xhr.open('POST', `${ApiService.baseUrl}/api/upload`);
+                    
+                    xhr.onload = () => {
+                        if (xhr.status >= 200 && xhr.status < 300) {
+                            try {
+                                const response = JSON.parse(xhr.responseText);
+                                resolve({
+                                    success: true,
+                                    data: response
+                                });
+                            } catch (e) {
+                                resolve({
+                                    success: true,
+                                    data: { url: xhr.responseText }
+                                });
+                            }
+                        } else {
+                            reject(new Error(`Upload failed: ${xhr.status}`));
+                        }
+                    };
+                    
+                    xhr.onerror = () => reject(new Error('Network error'));
+                    
+                    if (onProgress) {
+                        xhr.upload.onprogress = (e) => {
+                            if (e.lengthComputable) {
+                                const percent = (e.loaded / e.total) * 100;
+                                onProgress(percent);
+                            }
+                        };
+                    }
+                    
+                    xhr.send(formData);
+                });
+                
+                return await promise;
+                
+            } catch (error) {
+                console.error('Upload error:', error);
+                return {
+                    success: false,
+                    error: error.message
+                };
+            }
+        },
+
+        // Get file info
+        async getFileInfo(fileId) {
+            return ApiService.request(`/api/upload/${fileId}`);
+        },
+
+        // Delete file
+        async deleteFile(fileId) {
+            return ApiService.request(`/api/upload/${fileId}`, {
+                method: 'DELETE'
+            });
+        }
+    },
+
+    // ===== SEARCH API =====
+    search: {
+        // Search conversations
+        async searchChats(query) {
+            return ApiService.request(`/api/search/chats?q=${encodeURIComponent(query)}`);
+        },
+
+        // Search images
+        async searchImages(query) {
+            return ApiService.request(`/api/search/images?q=${encodeURIComponent(query)}`);
+        },
+
+        // Search code snippets
+        async searchCode(query) {
+            return ApiService.request(`/api/search/code?q=${encodeURIComponent(query)}`);
+        },
+
+        // Global search
+        async searchAll(query) {
+            return ApiService.request(`/api/search/all?q=${encodeURIComponent(query)}`);
         }
     },
 
@@ -407,6 +619,7 @@ const ApiService = {
     // Set custom base URL
     setBaseUrl(url) {
         this.baseUrl = url;
+        console.log(`API base URL set to: ${url}`);
     },
 
     // Set timeout
@@ -424,21 +637,57 @@ const ApiService = {
         delete this.headers[key];
     },
 
+    // Get auth token
+    getAuthToken() {
+        return localStorage.getItem('auth_token');
+    },
+
+    // Set auth token
+    setAuthToken(token) {
+        if (token) {
+            localStorage.setItem('auth_token', token);
+            this.addHeader('Authorization', `Bearer ${token}`);
+        } else {
+            localStorage.removeItem('auth_token');
+            delete this.headers['Authorization'];
+        }
+    },
+
+    // Clear all headers
+    clearHeaders() {
+        this.headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        };
+    },
+
     // ===== TEST CONNECTION =====
     async testConnection() {
         try {
             const result = await this.system.health();
             return {
                 success: result.success,
-                message: result.success ? 'Connected successfully' : 'Connection failed',
-                data: result.data
+                message: result.success ? '✅ Connected successfully' : '❌ Connection failed',
+                data: result.data,
+                url: this.baseUrl
             };
         } catch (error) {
             return {
                 success: false,
-                message: `Connection error: ${error.message}`
+                message: `❌ Connection error: ${error.message}`,
+                url: this.baseUrl
             };
         }
+    },
+
+    // ===== GET API INFO =====
+    getInfo() {
+        return {
+            baseUrl: this.baseUrl,
+            timeout: this.timeout,
+            headers: { ...this.headers },
+            hasToken: !!this.headers['Authorization']
+        };
     }
 };
 
@@ -450,4 +699,15 @@ if (typeof module !== 'undefined' && module.exports) {
 // Make globally available in browser
 if (typeof window !== 'undefined') {
     window.ApiService = ApiService;
+    
+    // Auto-initialize on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        // Check for saved auth token
+        const token = localStorage.getItem('auth_token');
+        if (token) {
+            ApiService.setAuthToken(token);
+        }
+        
+        console.log('✅ ApiService initialized', ApiService.getInfo());
+    });
 }
