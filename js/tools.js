@@ -31,7 +31,7 @@ function toolsApp() {
         
         // Settings
         settings: {
-            apiEndpoint: 'https://oh.amkai.workers.dev'
+            apiEndpoint: 'https://my.amkai.workers.dev'
         },
         
         // ===== INIT =====
