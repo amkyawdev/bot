@@ -30,7 +30,7 @@ function chatApp() {
             theme: 'dark',
             accent: 'chatgpt',
             fontSize: 'medium',
-            apiEndpoint: 'https://oh.amkai.workers.dev' // api.js baseUrl
+            apiEndpoint: 'https://my.amkai.workers.dev' // api.js baseUrl
         },
         
         // Long Press Timers
