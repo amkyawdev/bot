@@ -14,6 +14,9 @@
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
+    <!-- API Service -->
+    <script src="../js/api.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -296,6 +299,20 @@
             flex: 1;
         }
         
+        /* ===== LOADING INDICATOR ===== */
+        .loading-small {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
         /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
             .tools-grid {
@@ -309,7 +326,7 @@
     </style>
 </head>
 <body>
-    <div class="tools-container" x-data="toolsApp()" x-init="init()">
+    <div class="tools-container" x-data="toolsApp()" x-init="init()" :data-theme="settings.theme">
         <!-- Status Line -->
         <div class="status-line">
             <div class="status-left">
@@ -318,8 +335,8 @@
                     <span>AI Tools</span>
                 </div>
                 <div class="status-item">
-                    <i class="fas fa-circle"></i>
-                    <span>6 tools</span>
+                    <i class="fas fa-circle" :class="apiConnected ? 'connected' : ''"></i>
+                    <span x-text="apiConnected ? 'Connected' : 'Local Mode'"></span>
                 </div>
             </div>
             <div class="status-right">
@@ -423,7 +440,10 @@
                     <template x-if="activeTool === 'summarize'">
                         <div>
                             <textarea class="tool-input" x-model="summarizeText" rows="4" placeholder="Paste text to summarize..."></textarea>
-                            <button class="tool-btn" @click="summarize" :disabled="!summarizeText">Summarize</button>
+                            <button class="tool-btn" @click="summarize" :disabled="!summarizeText || isLoading">
+                                <span x-show="!isLoading">Summarize</span>
+                                <span x-show="isLoading"><i class="fas fa-spinner fa-spin"></i> Processing...</span>
+                            </button>
                             <div class="tool-output" x-show="summaryResult" x-text="summaryResult"></div>
                         </div>
                     </template>
@@ -451,7 +471,10 @@
                                 </select>
                             </div>
                             <textarea class="tool-input" x-model="translateText" rows="3" placeholder="Text to translate..."></textarea>
-                            <button class="tool-btn" @click="translate" :disabled="!translateText">Translate</button>
+                            <button class="tool-btn" @click="translate" :disabled="!translateText || isLoading">
+                                <span x-show="!isLoading">Translate</span>
+                                <span x-show="isLoading"><i class="fas fa-spinner fa-spin"></i> Translating...</span>
+                            </button>
                             <div class="tool-output" x-show="translationResult" x-text="translationResult"></div>
                         </div>
                     </template>
@@ -460,7 +483,10 @@
                     <template x-if="activeTool === 'grammar'">
                         <div>
                             <textarea class="tool-input" x-model="grammarText" rows="4" placeholder="Enter text to check grammar..."></textarea>
-                            <button class="tool-btn" @click="checkGrammar" :disabled="!grammarText">Check Grammar</button>
+                            <button class="tool-btn" @click="checkGrammar" :disabled="!grammarText || isLoading">
+                                <span x-show="!isLoading">Check Grammar</span>
+                                <span x-show="isLoading"><i class="fas fa-spinner fa-spin"></i> Checking...</span>
+                            </button>
                             <div class="tool-output" x-show="grammarResult" x-html="grammarResult"></div>
                         </div>
                     </template>
@@ -469,7 +495,10 @@
                     <template x-if="activeTool === 'sentiment'">
                         <div>
                             <textarea class="tool-input" x-model="sentimentText" rows="3" placeholder="Enter text for sentiment analysis..."></textarea>
-                            <button class="tool-btn" @click="analyzeSentiment" :disabled="!sentimentText">Analyze</button>
+                            <button class="tool-btn" @click="analyzeSentiment" :disabled="!sentimentText || isLoading">
+                                <span x-show="!isLoading">Analyze</span>
+                                <span x-show="isLoading"><i class="fas fa-spinner fa-spin"></i> Analyzing...</span>
+                            </button>
                             <div class="tool-output" x-show="sentimentResult">
                                 <p><strong>Sentiment:</strong> <span x-text="sentimentResult.sentiment"></span></p>
                                 <p><strong>Score:</strong> <span x-text="sentimentResult.score"></span></p>
@@ -482,7 +511,10 @@
                     <template x-if="activeTool === 'paraphrase'">
                         <div>
                             <textarea class="tool-input" x-model="paraphraseText" rows="4" placeholder="Enter text to paraphrase..."></textarea>
-                            <button class="tool-btn" @click="paraphrase" :disabled="!paraphraseText">Paraphrase</button>
+                            <button class="tool-btn" @click="paraphrase" :disabled="!paraphraseText || isLoading">
+                                <span x-show="!isLoading">Paraphrase</span>
+                                <span x-show="isLoading"><i class="fas fa-spinner fa-spin"></i> Paraphrasing...</span>
+                            </button>
                             <div class="tool-output" x-show="paraphraseResult" x-text="paraphraseResult"></div>
                         </div>
                     </template>
@@ -491,7 +523,10 @@
                     <template x-if="activeTool === 'keywords'">
                         <div>
                             <textarea class="tool-input" x-model="keywordsText" rows="3" placeholder="Enter text to extract keywords..."></textarea>
-                            <button class="tool-btn" @click="extractKeywords" :disabled="!keywordsText">Extract</button>
+                            <button class="tool-btn" @click="extractKeywords" :disabled="!keywordsText || isLoading">
+                                <span x-show="!isLoading">Extract</span>
+                                <span x-show="isLoading"><i class="fas fa-spinner fa-spin"></i> Extracting...</span>
+                            </button>
                             <div class="tool-output" x-show="keywordsResult.length">
                                 <div class="tool-tags" style="justify-content: center;">
                                     <template x-for="kw in keywordsResult">
@@ -509,7 +544,16 @@
     <script>
         function toolsApp() {
             return {
+                // ===== STATE =====
                 activeTool: null,
+                isLoading: false,
+                apiConnected: false,
+                settings: {
+                    theme: localStorage.getItem('theme') || 'dark',
+                    apiEndpoint: 'https://oh.amkai.workers.dev'
+                },
+                
+                // Tool Data
                 summarizeText: '',
                 summaryResult: '',
                 translateText: '',
@@ -525,10 +569,49 @@
                 keywordsText: '',
                 keywordsResult: [],
                 
+                // ===== INIT =====
                 init() {
-                    // Listen for theme changes from parent
+                    this.loadSettings();
+                    this.checkApiConnection();
+                    this.setupMessageListener();
+                },
+                
+                loadSettings() {
+                    const saved = localStorage.getItem('app_settings');
+                    if (saved) {
+                        try {
+                            const settings = JSON.parse(saved);
+                            this.settings = { ...this.settings, ...settings };
+                        } catch (e) {}
+                    }
+                    
+                    // Set theme
+                    document.documentElement.setAttribute('data-theme', this.settings.theme);
+                },
+                
+                async checkApiConnection() {
+                    if (window.ApiService) {
+                        window.ApiService.setBaseUrl(this.settings.apiEndpoint);
+                        const result = await window.ApiService.testConnection();
+                        this.apiConnected = result.success;
+                    } else {
+                        // Try direct fetch
+                        try {
+                            const response = await fetch(`${this.settings.apiEndpoint}/api/health`, {
+                                method: 'GET',
+                                headers: { 'Content-Type': 'application/json' }
+                            });
+                            this.apiConnected = response.ok;
+                        } catch (e) {
+                            this.apiConnected = false;
+                        }
+                    }
+                },
+                
+                setupMessageListener() {
                     window.addEventListener('message', (event) => {
                         if (event.data && event.data.type === 'global-theme-change' && event.data.theme) {
+                            this.settings.theme = event.data.theme;
                             document.documentElement.setAttribute('data-theme', event.data.theme);
                         }
                     });
@@ -578,91 +661,171 @@
                     return titles[tool] || 'Tool';
                 },
                 
-                summarize() {
+                // ===== API CALLS WITH FALLBACK =====
+                async callApi(endpoint, data) {
+                    this.isLoading = true;
+                    
+                    try {
+                        if (window.ApiService && this.apiConnected) {
+                            // Use ApiService
+                            const result = await window.ApiService.tools[endpoint](data);
+                            return result.success ? result.data : null;
+                        } else {
+                            // Direct fetch
+                            const response = await fetch(`${this.settings.apiEndpoint}/api/${endpoint}`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(data)
+                            });
+                            
+                            if (!response.ok) throw new Error('API error');
+                            return await response.json();
+                        }
+                    } catch (error) {
+                        console.log('API failed, using fallback:', error);
+                        return null; // Will trigger fallback
+                    } finally {
+                        this.isLoading = false;
+                    }
+                },
+                
+                // ===== SUMMARIZE =====
+                async summarize() {
                     if (!this.summarizeText) return;
                     
-                    // Simulate summarization
-                    const words = this.summarizeText.split(' ');
-                    if (words.length > 20) {
-                        this.summaryResult = words.slice(0, 20).join(' ') + '... [Summarized version of the text]';
+                    const data = await this.callApi('summarize', { text: this.summarizeText });
+                    
+                    if (data && data.summary) {
+                        this.summaryResult = data.summary;
                     } else {
-                        this.summaryResult = this.summarizeText + ' [This is the summarized version]';
+                        // Original fallback
+                        const words = this.summarizeText.split(' ');
+                        if (words.length > 20) {
+                            this.summaryResult = words.slice(0, 20).join(' ') + '... [Summarized version of the text]';
+                        } else {
+                            this.summaryResult = this.summarizeText + ' [This is the summarized version]';
+                        }
                     }
                 },
                 
-                translate() {
+                // ===== TRANSLATE =====
+                async translate() {
                     if (!this.translateText) return;
                     
-                    // Simulate translation
-                    const languages = {
-                        en: 'English',
-                        my: 'Burmese',
-                        th: 'Thai',
-                        zh: 'Chinese',
-                        ja: 'Japanese',
-                        ko: 'Korean'
-                    };
+                    const data = await this.callApi('translate', {
+                        text: this.translateText,
+                        from: this.translateFrom,
+                        to: this.translateTo
+                    });
                     
-                    this.translationResult = `[${languages[this.translateTo] || 'English'} translation]\n\n` + 
-                                            this.translateText + `\n\n(Simulated translation to ${languages[this.translateTo]})`;
-                },
-                
-                checkGrammar() {
-                    if (!this.grammarText) return;
-                    
-                    // Simulate grammar check
-                    const corrections = [
-                        '✓ No major grammar issues detected',
-                        '✓ Spelling looks good',
-                        '✗ Consider adding more punctuation',
-                        '✓ Sentence structure is clear'
-                    ];
-                    
-                    this.grammarResult = corrections.map(c => `<div style="margin: 5px 0">${c}</div>`).join('');
-                },
-                
-                analyzeSentiment() {
-                    if (!this.sentimentText) return;
-                    
-                    // Simulate sentiment analysis
-                    const sentiments = ['Positive', 'Neutral', 'Negative'];
-                    const random = Math.floor(Math.random() * 3);
-                    
-                    this.sentimentResult = {
-                        sentiment: sentiments[random],
-                        score: (Math.random() * 2 - 1).toFixed(2),
-                        confidence: (Math.random() * 0.5 + 0.5).toFixed(2)
-                    };
-                },
-                
-                paraphrase() {
-                    if (!this.paraphraseText) return;
-                    
-                    // Simulate paraphrasing
-                    const sentences = this.paraphraseText.split('.');
-                    if (sentences.length > 1) {
-                        sentences.reverse();
-                        this.paraphraseResult = sentences.join('. ') + ' [Paraphrased version]';
+                    if (data && data.translation) {
+                        this.translationResult = data.translation;
                     } else {
-                        this.paraphraseResult = this.paraphraseText.split(' ').reverse().join(' ') + ' [Paraphrased]';
+                        // Original fallback
+                        const languages = {
+                            en: 'English',
+                            my: 'Burmese',
+                            th: 'Thai',
+                            zh: 'Chinese',
+                            ja: 'Japanese',
+                            ko: 'Korean'
+                        };
+                        
+                        this.translationResult = `[${languages[this.translateTo] || 'English'} translation]\n\n` + 
+                                                this.translateText + `\n\n(Simulated translation to ${languages[this.translateTo]})`;
                     }
                 },
                 
-                extractKeywords() {
+                // ===== GRAMMAR =====
+                async checkGrammar() {
+                    if (!this.grammarText) return;
+                    
+                    const data = await this.callApi('grammar', { text: this.grammarText });
+                    
+                    if (data && data.corrections) {
+                        this.grammarResult = data.corrections.map(c => 
+                            `<div style="margin: 5px 0">${c}</div>`
+                        ).join('');
+                    } else {
+                        // Original fallback
+                        const corrections = [
+                            '✓ No major grammar issues detected',
+                            '✓ Spelling looks good',
+                            '✗ Consider adding more punctuation',
+                            '✓ Sentence structure is clear'
+                        ];
+                        
+                        this.grammarResult = corrections.map(c => `<div style="margin: 5px 0">${c}</div>`).join('');
+                    }
+                },
+                
+                // ===== SENTIMENT =====
+                async analyzeSentiment() {
+                    if (!this.sentimentText) return;
+                    
+                    const data = await this.callApi('sentiment', { text: this.sentimentText });
+                    
+                    if (data && data.sentiment) {
+                        this.sentimentResult = {
+                            sentiment: data.sentiment,
+                            score: data.score || '0.5',
+                            confidence: data.confidence || 'Medium'
+                        };
+                    } else {
+                        // Original fallback
+                        const sentiments = ['Positive', 'Neutral', 'Negative'];
+                        const random = Math.floor(Math.random() * 3);
+                        
+                        this.sentimentResult = {
+                            sentiment: sentiments[random],
+                            score: (Math.random() * 2 - 1).toFixed(2),
+                            confidence: (Math.random() * 0.5 + 0.5).toFixed(2)
+                        };
+                    }
+                },
+                
+                // ===== PARAPHRASE =====
+                async paraphrase() {
+                    if (!this.paraphraseText) return;
+                    
+                    const data = await this.callApi('paraphrase', { text: this.paraphraseText });
+                    
+                    if (data && data.paraphrased) {
+                        this.paraphraseResult = data.paraphrased;
+                    } else {
+                        // Original fallback
+                        const sentences = this.paraphraseText.split('.');
+                        if (sentences.length > 1) {
+                            sentences.reverse();
+                            this.paraphraseResult = sentences.join('. ') + ' [Paraphrased version]';
+                        } else {
+                            this.paraphraseResult = this.paraphraseText.split(' ').reverse().join(' ') + ' [Paraphrased]';
+                        }
+                    }
+                },
+                
+                // ===== KEYWORDS =====
+                async extractKeywords() {
                     if (!this.keywordsText) return;
                     
-                    // Simulate keyword extraction
-                    const words = this.keywordsText.toLowerCase()
-                        .replace(/[^\w\s]/g, '')
-                        .split(/\s+/)
-                        .filter(w => w.length > 3);
+                    const data = await this.callApi('keywords', { text: this.keywordsText });
                     
-                    const uniqueWords = [...new Set(words)];
-                    const keywords = uniqueWords
-                        .sort(() => 0.5 - Math.random())
-                        .slice(0, 5);
-                    
-                    this.keywordsResult = keywords;
+                    if (data && data.keywords) {
+                        this.keywordsResult = data.keywords;
+                    } else {
+                        // Original fallback
+                        const words = this.keywordsText.toLowerCase()
+                            .replace(/[^\w\s]/g, '')
+                            .split(/\s+/)
+                            .filter(w => w.length > 3);
+                        
+                        const uniqueWords = [...new Set(words)];
+                        const keywords = uniqueWords
+                            .sort(() => 0.5 - Math.random())
+                            .slice(0, 5);
+                        
+                        this.keywordsResult = keywords;
+                    }
                 }
             };
         }
