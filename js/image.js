@@ -14,7 +14,7 @@ function imageApp() {
         // Settings
         settings: {
             theme: 'dark',
-            apiEndpoint: 'https://oh.amkai.workers.dev'
+            apiEndpoint: 'https://my.amkai.workers.dev'
         },
         
         // ===== INIT =====
