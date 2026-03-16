@@ -1,5 +1,5 @@
 name = "oh"
-main = "bot/worker/worker.js"
+main = "worker/worker.js"
 compatibility_date = "2026-03-16"
 
 workers_dev = true
