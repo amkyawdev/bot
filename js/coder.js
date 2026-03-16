@@ -32,7 +32,7 @@ function coderApp() {
             theme: 'dark',
             fontSize: '14px',
             autoSave: 'on',
-            apiEndpoint: 'https://oh.amkai.workers.dev'
+            apiEndpoint: 'https://my.amkai.workers.dev'
         },
         
         // ===== INIT =====
