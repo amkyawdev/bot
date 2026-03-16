@@ -1,0 +1,45 @@
+{
+  "name": "amkyawdev-chatbot",
+  "version": "2.0.0",
+  "description": "AmkyawDev AI Assistant - Premium Chatbot with Cloudflare Worker",
+  "main": "worker.js",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "build": "echo 'No build step required'",
+    "format": "prettier --write '**/*.{js,css,html,json}'",
+    "lint": "eslint '**/*.js'"
+  },
+  "keywords": [
+    "ai",
+    "chatbot",
+    "chatgpt",
+    "deepseek",
+    "cloudflare",
+    "worker",
+    "alpinejs",
+    "bulma"
+  ],
+  "author": "AmkyawDev",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/amkyawdev/amkyawdev-chatbot"
+  },
+  "devDependencies": {
+    "wrangler": "^3.0.0",
+    "prettier": "^3.0.0",
+    "eslint": "^8.0.0",
+    "eslint-config-prettier": "^9.0.0"
+  },
+  "dependencies": {
+    "alpinejs": "^3.13.0",
+    "bulma": "^0.9.4",
+    "three": "^0.128.0",
+    "marked": "^5.1.0",
+    "highlight.js": "^11.8.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
