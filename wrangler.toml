@@ -1,5 +1,5 @@
 name = "groq"
-main = "worker/worker.js"
+main = "worker/api.js"
 compatibility_date = "2026-03-16"
 
 workers_dev = true
