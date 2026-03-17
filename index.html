@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AmkyawDev AI - Home</title>
+    <link rel="stylesheet" href="css/bulma.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #1a1a1a;
+            color: #e5e5e5;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #three-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.15;
+            background: radial-gradient(circle at 50% 50%, #10a37f 0%, transparent 70%);
+        }
+
+        .home-container {
+            position: relative;
+            z-index: 1;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .logo-large {
+            width: 120px;
+            height: 120px;
+            background: #10a37f;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(16, 163, 127, 0.3);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .logo-large i {
+            font-size: 60px;
+            color: white;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #10a37f, #4d9e8a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #a3a3a3;
+            margin-bottom: 40px;
+            text-align: center;
+            max-width: 600px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: #10a37f;
+            color: white;
+            box-shadow: 0 10px 20px rgba(16, 163, 127, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: #0d8a6b;
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(16, 163, 127, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #e5e5e5;
+            border: 2px solid #404040;
+        }
+
+        .btn-outline:hover {
+            border-color: #10a37f;
+            color: #10a37f;
+            transform: translateY(-2px);
+        }
+
+        .features {
+            display: flex;
+            gap: 30px;
+            margin-top: 60px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .feature-item {
+            text-align: center;
+            padding: 20px;
+            background: rgba(45, 45, 45, 0.5);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            width: 200px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .feature-item i {
+            font-size: 30px;
+            color: #10a37f;
+            margin-bottom: 10px;
+        }
+
+        .feature-item h3 {
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+
+        .feature-item p {
+            font-size: 0.8rem;
+            color: #a3a3a3;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            .subtitle { font-size: 1rem; }
+            .btn { padding: 12px 30px; }
+            .logo-large { width: 80px; height: 80px; }
+            .logo-large i { font-size: 40px; }
+        }
+    </style>
+</head>
+<body>
+    <div id="three-bg"></div>
+    
+    <div class="home-container">
+        <div class="logo-large">
+            <i class="fas fa-robot"></i>
+        </div>
+        
+        <h1>AmkyawDev AI</h1>
+        <p class="subtitle">Advanced AI Assistant for Developers & Teams</p>
+        
+        <div class="button-group">
+            <a href="auth/login.html" class="btn btn-primary">
+                <i class="fas fa-sign-in-alt"></i> Get Started
+            </a>
+            <a href="pages/project-about.html" class="btn btn-outline">
+                <i class="fas fa-info-circle"></i> Learn More
+            </a>
+        </div>
+        
+        <div class="features">
+            <div class="feature-item">
+                <i class="fas fa-comment-dots"></i>
+                <h3>Smart Chat</h3>
+                <p>AI-powered conversations</p>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-code"></i>
+                <h3>Code Assistant</h3>
+                <p>Help with coding tasks</p>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-globe"></i>
+                <h3>Multilingual</h3>
+                <p>English & Myanmar</p>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/background-three.js"></script>
+</body>
+</html>

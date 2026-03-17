@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AmkyawDev AI - Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: #e5e5e5;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: #1a1a1a;
+            border-radius: 30px;
+            padding: 40px 30px;
+            border: 1px solid #2d2d2d;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .logo-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: #10a37f;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+
+        .logo i {
+            font-size: 40px;
+            color: white;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #a3a3a3;
+            font-size: 14px;
+        }
+
+        /* Permission Items */
+        .permission-item {
+            background: #2d2d2d;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border: 1px solid #404040;
+        }
+
+        .permission-icon {
+            width: 48px;
+            height: 48px;
+            background: #3d3d3d;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #a3a3a3;
+        }
+
+        .permission-icon.granted {
+            background: #10a37f;
+            color: white;
+        }
+
+        .permission-icon.denied {
+            background: #ef4444;
+            color: white;
+        }
+
+        .permission-info {
+            flex: 1;
+        }
+
+        .permission-info h3 {
+            font-size: 15px;
+            margin-bottom: 4px;
+        }
+
+        .permission-info p {
+            font-size: 12px;
+            color: #a3a3a3;
+        }
+
+        .permission-status {
+            font-size: 13px;
+            font-weight: 500;
+            padding: 4px 12px;
+            border-radius: 20px;
+            background: #3d3d3d;
+        }
+
+        .permission-status.granted {
+            color: #10a37f;
+        }
+
+        .permission-status.denied {
+            color: #ef4444;
+        }
+
+        .permission-status.pending {
+            color: #f59e0b;
+        }
+
+        /* Buttons */
+        .permission-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .btn-allow, .btn-deny {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-allow {
+            background: #10a37f;
+            color: white;
+        }
+
+        .btn-allow:hover:not(:disabled) {
+            background: #0d8a6b;
+        }
+
+        .btn-deny {
+            background: #3d3d3d;
+            color: #a3a3a3;
+            border: 1px solid #404040;
+        }
+
+        .btn-deny:hover:not(:disabled) {
+            background: #ef4444;
+            color: white;
+            border-color: #ef4444;
+        }
+
+        .btn-allow:disabled, .btn-deny:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Progress */
+        .progress-section {
+            margin: 25px 0;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #a3a3a3;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: #2d2d2d;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #10a37f;
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        /* Login Button */
+        .login-btn {
+            width: 100%;
+            padding: 16px;
+            background: #10a37f;
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 20px 0;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .login-btn.enabled {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .login-btn.enabled:hover {
+            background: #0d8a6b;
+            transform: translateY(-2px);
+        }
+
+        /* Language */
+        .language-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .lang-btn {
+            padding: 8px 20px;
+            background: transparent;
+            border: 1px solid #404040;
+            border-radius: 20px;
+            color: #a3a3a3;
+            cursor: pointer;
+        }
+
+        .lang-btn.active {
+            background: #10a37f;
+            border-color: #10a37f;
+            color: white;
+        }
+
+        .back-link {
+            text-align: center;
+        }
+
+        .back-link a {
+            color: #a3a3a3;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        .back-link a:hover {
+            color: #10a37f;
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            background: #10a37f;
+            color: white;
+            border-radius: 8px;
+            animation: slideIn 0.3s;
+            z-index: 1000;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="logo-section">
+                <div class="logo">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <h1>Welcome Back</h1>
+                <p class="subtitle">Grant permissions to continue</p>
+            </div>
+
+            <!-- Storage Permission -->
+            <div class="permission-item" id="storagePermission">
+                <div class="permission-icon" id="storageIcon">
+                    <i class="fas fa-database"></i>
+                </div>
+                <div style="flex: 1;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h3>Storage Access</h3>
+                            <p>Save your chats and settings</p>
+                        </div>
+                        <span class="permission-status pending" id="storageStatus">Pending</span>
+                    </div>
+                    <div class="permission-buttons" id="storageButtons">
+                        <button class="btn-allow" onclick="handlePermission('storage', 'allow')">Allow</button>
+                        <button class="btn-deny" onclick="handlePermission('storage', 'deny')">Deny</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Microphone Permission -->
+            <div class="permission-item" id="micPermission">
+                <div class="permission-icon" id="micIcon">
+                    <i class="fas fa-microphone"></i>
+                </div>
+                <div style="flex: 1;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h3>Microphone Access</h3>
+                            <p>Use voice input (optional)</p>
+                        </div>
+                        <span class="permission-status pending" id="micStatus">Pending</span>
+                    </div>
+                    <div class="permission-buttons" id="micButtons">
+                        <button class="btn-allow" onclick="handlePermission('mic', 'allow')">Allow</button>
+                        <button class="btn-deny" onclick="handlePermission('mic', 'deny')">Deny</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress -->
+            <div class="progress-section">
+                <div class="progress-text">
+                    <span>Setup Progress</span>
+                    <span id="progressPercent">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+                </div>
+            </div>
+
+            <!-- Language -->
+            <div class="language-buttons">
+                <button class="lang-btn active" onclick="setLanguage('en')">English</button>
+                <button class="lang-btn" onclick="setLanguage('mm')">မြန်မာ</button>
+            </div>
+
+            <!-- Login Button -->
+            <button class="login-btn" id="loginBtn" onclick="handleLogin()" disabled>
+                Grant permissions to continue
+            </button>
+
+            <!-- Back Link -->
+            <div class="back-link">
+                <a href="../index.html"><i class="fas fa-arrow-left"></i> Back to Home</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple permission system
+        let permissions = {
+            storage: { status: 'pending', required: true },
+            mic: { status: 'pending', required: false }
+        };
+
+        let currentLang = 'en';
+
+        // Handle permission
+        async function handlePermission(type, action) {
+            console.log('Handling permission:', type, action);
+            
+            const statusEl = document.getElementById(type + 'Status');
+            const iconEl = document.getElementById(type + 'Icon');
+            const buttons = document.getElementById(type + 'Buttons');
+            const permissionItem = document.getElementById(type + 'Permission');
+
+            if (action === 'deny') {
+                // Deny permission
+                permissions[type].status = 'denied';
+                statusEl.textContent = 'Denied';
+                statusEl.className = 'permission-status denied';
+                iconEl.className = 'permission-icon denied';
+                
+                // Disable buttons
+                buttons.querySelectorAll('button').forEach(btn => btn.disabled = true);
+                
+                showNotification(type + ' permission denied');
+                updateProgress();
+                return;
+            }
+
+            // Handle allow
+            if (type === 'storage') {
+                // Test localStorage
+                try {
+                    localStorage.setItem('test', 'test');
+                    localStorage.removeItem('test');
+                    
+                    permissions.storage.status = 'granted';
+                    statusEl.textContent = 'Granted';
+                    statusEl.className = 'permission-status granted';
+                    iconEl.className = 'permission-icon granted';
+                    
+                    buttons.querySelectorAll('button').forEach(btn => btn.disabled = true);
+                    
+                    showNotification('Storage access granted');
+                } catch (e) {
+                    permissions.storage.status = 'denied';
+                    statusEl.textContent = 'Failed';
+                    statusEl.className = 'permission-status denied';
+                    iconEl.className = 'permission-icon denied';
+                    
+                    showNotification('Storage access failed', 'error');
+                }
+            }
+
+            if (type === 'mic') {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    stream.getTracks().forEach(track => track.stop());
+                    
+                    permissions.mic.status = 'granted';
+                    statusEl.textContent = 'Granted';
+                    statusEl.className = 'permission-status granted';
+                    iconEl.className = 'permission-icon granted';
+                    
+                    buttons.querySelectorAll('button').forEach(btn => btn.disabled = true);
+                    
+                    showNotification('Microphone access granted');
+                } catch (e) {
+                    permissions.mic.status = 'denied';
+                    statusEl.textContent = 'Denied';
+                    statusEl.className = 'permission-status denied';
+                    iconEl.className = 'permission-icon denied';
+                    
+                    buttons.querySelectorAll('button').forEach(btn => btn.disabled = true);
+                    
+                    showNotification('Microphone access denied', 'error');
+                }
+            }
+
+            updateProgress();
+        }
+
+        // Update progress
+        function updateProgress() {
+            const total = Object.keys(permissions).length;
+            const granted = Object.values(permissions).filter(p => p.status === 'granted').length;
+            const percent = Math.round((granted / total) * 100);
+            
+            document.getElementById('progressFill').style.width = percent + '%';
+            document.getElementById('progressPercent').textContent = percent + '%';
+
+            // Check if required permissions are granted
+            const requiredGranted = Object.values(permissions)
+                .filter(p => p.required)
+                .every(p => p.status === 'granted');
+
+            const loginBtn = document.getElementById('loginBtn');
+
+            if (requiredGranted) {
+                loginBtn.disabled = false;
+                loginBtn.classList.add('enabled');
+                loginBtn.textContent = 'Login Now';
+            } else {
+                loginBtn.disabled = true;
+                loginBtn.classList.remove('enabled');
+                loginBtn.textContent = 'Grant required permissions';
+            }
+        }
+
+        // Handle login
+        function handleLogin() {
+            const requiredGranted = Object.values(permissions)
+                .filter(p => p.required)
+                .every(p => p.status === 'granted');
+
+            if (!requiredGranted) {
+                showNotification('Please grant required permissions first', 'error');
+                return;
+            }
+
+            // Save user data
+            const userData = {
+                name: 'Aung Myo Kyaw',
+                email: 'demo@amkyawdev.com',
+                initials: 'AK',
+                permissions: permissions,
+                language: currentLang
+            };
+
+            localStorage.setItem('user', JSON.stringify(userData));
+            localStorage.setItem('userName', userData.name);
+            localStorage.setItem('userEmail', userData.email);
+            localStorage.setItem('auth_token', 'token_' + Date.now());
+            localStorage.setItem('preferred_language', currentLang);
+
+            showNotification('Login successful! Redirecting...', 'success');
+
+            setTimeout(() => {
+                window.location.href = '../pages/main.html';
+            }, 1500);
+        }
+
+        // Set language
+        function setLanguage(lang) {
+            currentLang = lang;
+            
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            localStorage.setItem('preferred_language', lang);
+        }
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.style.background = type === 'error' ? '#ef4444' : '#10a37f';
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Check initial permissions
+        (function checkInitial() {
+            // Check if already logged in
+            if (localStorage.getItem('auth_token')) {
+                window.location.href = '../pages/main.html';
+            }
+            
+            // Check storage
+            try {
+                localStorage.setItem('test', 'test');
+                localStorage.removeItem('test');
+                // If we get here, storage is available - auto-grant
+                setTimeout(() => {
+                    handlePermission('storage', 'allow');
+                }, 500);
+            } catch (e) {
+                console.log('Storage not available');
+            }
+        })();
+    </script>
+</body>
+</html>
