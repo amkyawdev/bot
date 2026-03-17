@@ -1,5 +1,8 @@
 export default {
-  async fetch(request, env, ctx) {
+  async fetch(request, env) {
+
+    const url = new URL(request.url);
+    const path = url.pathname;
 
     const headers = {
       "Access-Control-Allow-Origin": "*",
@@ -8,68 +11,78 @@ export default {
       "Content-Type": "application/json"
     };
 
-    // OPTIONS
+    // CORS
     if (request.method === "OPTIONS") {
       return new Response(null, { headers });
     }
 
-    // GET test
-    if (request.method === "GET") {
-      return new Response(JSON.stringify({
-        success: true,
-        message: "Groq Worker running 🚀"
-      }), { headers });
-    }
-
-    try {
-      if (request.method !== "POST") {
-        return new Response(JSON.stringify({
-          success: false,
-          error: "Only POST allowed"
-        }), { status: 405, headers });
-      }
-
-      const { message } = await request.json();
-
-      if (!message) {
-        return new Response(JSON.stringify({
-          success: false,
-          error: "Message required"
-        }), { status: 400, headers });
-      }
-
-      // 🔥 Groq API call (no SDK)
-      const res = await fetch("https://api.groq.com/openai/v1/responses", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${env.GROQ_API_KEY}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          model: "llama3-70b-8192",
-          input: message
-        })
-      });
-
-      const data = await res.json();
-
-      let reply = "";
-      try {
-        reply = data.output[0].content[0].text;
-      } catch {
-        reply = "No response";
-      }
-
-      return new Response(JSON.stringify({
-        success: true,
-        reply
-      }), { headers });
-
-    } catch (err) {
+    // 🧪 Debug: API Key Check
+    if (!env.GROQ_API_KEY) {
       return new Response(JSON.stringify({
         success: false,
-        error: err.message
-      }), { status: 500, headers });
+        error: "GROQ_API_KEY missing ❌"
+      }), { headers });
     }
+
+    // 🌐 Health
+    if (path === "/api/health") {
+      return new Response(JSON.stringify({
+        success: true,
+        data: { status: "OK 🚀" }
+      }), { headers });
+    }
+
+    // 💬 Chat API
+    if (path === "/api/chat" && request.method === "POST") {
+      try {
+        const body = await request.json();
+        const message = body.message;
+
+        if (!message) {
+          return new Response(JSON.stringify({
+            success: false,
+            error: "Message required"
+          }), { headers });
+        }
+
+        const res = await fetch("https://api.groq.com/openai/v1/responses", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${env.GROQ_API_KEY}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            model: "llama3-70b-8192",
+            input: message
+          })
+        });
+
+        const data = await res.json();
+
+        // 🔥 SAFE RESPONSE PARSE
+        let reply =
+          data.output_text ||
+          data.output?.[0]?.content?.[0]?.text ||
+          data.choices?.[0]?.message?.content ||
+          "No response 🤖";
+
+        return new Response(JSON.stringify({
+          success: true,
+          data: { reply }
+        }), { headers });
+
+      } catch (err) {
+        return new Response(JSON.stringify({
+          success: false,
+          error: err.message
+        }), { headers });
+      }
+    }
+
+    // ❌ Not found
+    return new Response(JSON.stringify({
+      success: false,
+      error: "Route not found"
+    }), { status: 404, headers });
   }
 };
