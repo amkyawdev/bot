@@ -1,7 +1,7 @@
 // worker/api.js - PRO VERSION
 console.log('📡 API.js loading...');
 
-const API_BASE = 'https://my.amkai.workers.dev';
+const API_BASE = 'https://groq.amkai.workers.dev';
 
 const api = {
 
