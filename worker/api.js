@@ -1,144 +1,69 @@
-// worker/api.js - PRO VERSION
-console.log('📡 API.js loading...');
+export default {
+  async fetch(request, env) {
 
-const API_BASE = 'https://groq.amkai.workers.dev';
+    const url = new URL(request.url);
+    const path = url.pathname;
 
-const api = {
+    const headers = {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type",
+      "Content-Type": "application/json"
+    };
 
-    // 🌐 Health Check
-    async testConnection() {
-        const start = Date.now();
-
-        try {
-            const res = await fetch(`${API_BASE}/api/health`);
-            const data = await res.json();
-
-            return {
-                success: true,
-                latency: Date.now() - start,
-                message: data?.data?.status || 'Connected'
-            };
-
-        } catch (error) {
-            return {
-                success: false,
-                latency: -1,
-                message: error.message || 'Connection failed'
-            };
-        }
-    },
-
-    // 💬 Chat (non-stream)
-    async chat(params = {}) {
-        console.log('💬 API chat called:', params);
-
-        try {
-            const res = await fetch(`${API_BASE}/api/chat`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    message: params.message,          // ✅ FIXED
-                    history: params.history || [],    // optional
-                    model: params.model || 'gpt-4',
-                    temperature: params.temperature ?? 0.7
-                })
-            });
-
-            if (!res.ok) {
-                throw new Error(`HTTP ${res.status}`);
-            }
-
-            const data = await res.json();
-            console.log('📥 API response:', data);
-
-            return {
-                success: true,
-                data: {
-                    response:
-                        data?.data?.response ||
-                        data?.data?.reply ||
-                        data?.reply ||
-                        'No response 🤖'
-                }
-            };
-
-        } catch (error) {
-            console.error('❌ API error:', error);
-
-            return {
-                success: false,
-                data: {
-                    response: `⚠️ Error: ${error.message}`
-                }
-            };
-        }
-    },
-
-    // 🔴 Streaming Chat (REAL-TIME)
-    async chatStream(params = {}, onChunk) {
-        console.log('🔴 Streaming chat:', params);
-
-        try {
-            const res = await fetch(`${API_BASE}/api/chat/stream`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    message: params.message
-                })
-            });
-
-            const reader = res.body.getReader();
-            const decoder = new TextDecoder();
-
-            let buffer = '';
-            let full = '';
-
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
-
-                buffer += decoder.decode(value, { stream: true });
-
-                const parts = buffer.split("\n\n");
-                buffer = parts.pop();
-
-                for (let part of parts) {
-                    if (part.startsWith("data: ")) {
-                        try {
-                            const json = JSON.parse(part.replace("data: ", ""));
-
-                            if (json.chunk) {
-                                full += json.chunk;
-                                onChunk && onChunk(full, false);
-                            }
-
-                            if (json.done) {
-                                onChunk && onChunk(json.full, true);
-                            }
-
-                        } catch (e) {
-                            console.warn('Parse error:', e);
-                        }
-                    }
-                }
-            }
-
-            return { success: true };
-
-        } catch (error) {
-            console.error('❌ Stream error:', error);
-
-            onChunk && onChunk(`⚠️ ${error.message}`, true);
-
-            return { success: false };
-        }
+    if (request.method === "OPTIONS") {
+      return new Response(null, { headers });
     }
 
-};
+    // 🌐 Health Check
+    if (path === "/api/health") {
+      return new Response(JSON.stringify({
+        success: true,
+        data: { status: "OK 🚀" }
+      }), { headers });
+    }
 
-window.api = api;
-console.log('✅ API.js ready');
+    // 💬 Chat
+    if (path === "/api/chat" && request.method === "POST") {
+      try {
+        const { message } = await request.json();
+
+        const res = await fetch("https://api.groq.com/openai/v1/responses", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${env.GROQ_API_KEY}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            model: "llama3-70b-8192",
+            input: message
+          })
+        });
+
+        const data = await res.json();
+
+        let reply =
+          data.output_text ||
+          data.output?.[0]?.content?.[0]?.text ||
+          "No response";
+
+        return new Response(JSON.stringify({
+          success: true,
+          data: { reply }
+        }), { headers });
+
+      } catch (err) {
+        return new Response(JSON.stringify({
+          success: false,
+          error: err.message
+        }), { status: 500, headers });
+      }
+    }
+
+    // ❌ Not Found
+    return new Response(JSON.stringify({
+      success: false,
+      error: "Route not found"
+    }), { status: 404, headers });
+  }
+};
