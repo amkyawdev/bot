@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* မူလ chat.css အတိုင်း - ဘာမှမပြောင်းလဲပါ */
         * {
             margin: 0;
             padding: 0;
@@ -30,7 +31,7 @@
             position: relative;
         }
 
-        /* ===== CHAT HEADER ===== */
+        /* Chat Header */
         .chat-header {
             display: flex;
             align-items: center;
@@ -109,7 +110,7 @@
             color: #a3a3a3;
         }
 
-        /* ===== MESSAGES AREA ===== */
+        /* Messages Area */
         .messages-area {
             flex: 1;
             overflow-y: auto;
@@ -184,7 +185,7 @@
             margin-bottom: 2px;
         }
 
-        /* File Attachment in Message */
+        /* File Attachment */
         .file-attachment {
             display: flex;
             align-items: center;
@@ -200,7 +201,7 @@
             color: #10a37f;
         }
 
-        /* Voice Button in Message */
+        /* Voice Button */
         .message-actions {
             display: flex;
             justify-content: flex-end;
@@ -233,7 +234,7 @@
             animation: pulse 1s infinite;
         }
 
-        /* ===== TYPING INDICATOR ===== */
+        /* Typing Indicator */
         .typing-indicator {
             display: flex;
             gap: 10px;
@@ -264,7 +265,7 @@
             30% { transform: translateY(-6px); }
         }
 
-        /* ===== INPUT AREA ===== */
+        /* Input Area */
         .input-area {
             background: #2d2d2d;
             border-top: 1px solid #404040;
@@ -577,7 +578,7 @@
                     placeholder="Type a message or click mic to speak..." 
                     rows="1"
                 ></textarea>
-                
+
                 <div class="input-actions">
                     <!-- Upload Button -->
                     <div class="action-btn" id="uploadBtn">
@@ -607,8 +608,15 @@
         </div>
     </div>
 
-    <!-- Scripts -->
+    <!-- Scripts - ဒီအစီအစဉ်အတိုင်းဖြစ်ဖို့လိုတယ် -->
     <script src="../worker/api.js"></script>
     <script src="../js/chat.js"></script>
+    
+    <!-- Debug Script (ဖျက်လို့ရတယ်) -->
+    <script>
+        console.log('📄 Chat.html loaded');
+        console.log('API exists?', !!window.api);
+        console.log('Chat exists?', !!window.chat);
+    </script>
 </body>
 </html>
