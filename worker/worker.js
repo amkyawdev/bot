@@ -63,7 +63,7 @@ export default {
         // Request body ကိုဖတ်မယ်
         const body = await request.json();
         const { prompt, message, messages } = body;
-        
+
         // သုံးမယ့် prompt ကိုသတ်မှတ်မယ်
         const userPrompt = prompt || message || "What is the origin of the phrase Hello, World";
 
@@ -121,7 +121,7 @@ export default {
         const stream = new ReadableStream({
           async start(controller) {
             const encoder = new TextEncoder();
-            
+
             try {
               const aiResponse = await env.AI.run("@cf/meta/llama-3.1-8b-instruct", {
                 prompt: userPrompt,
@@ -132,7 +132,7 @@ export default {
 
               // AI response ကိုအပိုင်းပိုင်းဖြတ်ပြီးပို့မယ်
               const words = (aiResponse.response || aiResponse).split(' ');
-              
+
               for (let i = 0; i < words.length; i++) {
                 controller.enqueue(
                   encoder.encode(`data: ${JSON.stringify({
@@ -141,14 +141,14 @@ export default {
                     total: words.length
                   })}\n\n`)
                 );
-                
+
                 // 50ms ခြားပြီးပို့မယ်
                 await new Promise(resolve => setTimeout(resolve, 50));
               }
-              
+
               controller.enqueue(encoder.encode('data: [DONE]\n\n'));
               controller.close();
-              
+
             } catch (error) {
               controller.enqueue(
                 encoder.encode(`data: ${JSON.stringify({
