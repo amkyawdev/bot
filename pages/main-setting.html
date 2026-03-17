@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - AmkyawDev AI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0f0f0f;
+            color: #e5e5e5;
+            min-height: 100vh;
+        }
+
+        .settings-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        /* Header */
+        .settings-header {
+            margin-bottom: 30px;
+        }
+
+        .settings-header h1 {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: linear-gradient(135deg, #fff, #a3a3a3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .settings-header h1 i {
+            color: #10a37f;
+            -webkit-text-fill-color: #10a37f;
+        }
+
+        .settings-header p {
+            color: #a3a3a3;
+            font-size: 15px;
+            margin-left: 44px;
+        }
+
+        /* Settings Grid */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 25px;
+            background: #1a1a1a;
+            border-radius: 25px;
+            border: 1px solid #2d2d2d;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* Sidebar */
+        .settings-sidebar {
+            background: #141414;
+            padding: 25px 0;
+            border-right: 1px solid #2d2d2d;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .sidebar-section {
+            margin-bottom: 25px;
+        }
+
+        .sidebar-title {
+            padding: 0 25px;
+            margin-bottom: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #6b6b6b;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 25px;
+            color: #a3a3a3;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-item i {
+            width: 18px;
+            font-size: 14px;
+            color: #6b6b6b;
+            transition: all 0.2s;
+        }
+
+        .sidebar-item:hover {
+            background: #2d2d2d;
+            color: #e5e5e5;
+        }
+
+        .sidebar-item:hover i {
+            color: #10a37f;
+        }
+
+        .sidebar-item.active {
+            background: #2d2d2d;
+            color: #10a37f;
+            border-left-color: #10a37f;
+        }
+
+        .sidebar-item.active i {
+            color: #10a37f;
+        }
+
+        /* Content Area */
+        .settings-content {
+            padding: 35px;
+            overflow-y: auto;
+            max-height: calc(100vh - 150px);
+            background: #1a1a1a;
+        }
+
+        .settings-section {
+            display: none;
+        }
+
+        .settings-section.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .settings-section h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #10a37f;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #2d2d2d;
+        }
+
+        .settings-section h3 {
+            font-size: 16px;
+            margin: 25px 0 15px;
+            color: #e5e5e5;
+        }
+
+        .settings-section h4 {
+            font-size: 14px;
+            margin-bottom: 5px;
+            color: #e5e5e5;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #a3a3a3;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            max-width: 500px;
+            padding: 12px 16px;
+            background: #2d2d2d;
+            border: 1px solid #404040;
+            border-radius: 12px;
+            color: #e5e5e5;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #10a37f;
+            box-shadow: 0 0 0 3px rgba(16, 163, 127, 0.1);
+        }
+
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a3a3a3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            background-size: 16px;
+            padding-right: 48px;
+        }
+
+        /* Setting Items */
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #2d2d2d;
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-item p {
+            color: #a3a3a3;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        /* Switch Toggle */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 52px;
+            height: 28px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #404040;
+            transition: .3s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #10a37f;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+
+        /* Language Grid */
+        .language-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .language-card {
+            background: #2d2d2d;
+            border: 2px solid #404040;
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .language-card:hover {
+            border-color: #10a37f;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .language-card.active {
+            border-color: #10a37f;
+            background: rgba(16, 163, 127, 0.1);
+        }
+
+        .language-card i {
+            font-size: 40px;
+            color: #10a37f;
+            margin-bottom: 15px;
+        }
+
+        .language-card h4 {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .language-card p {
+            font-size: 12px;
+            color: #a3a3a3;
+        }
+
+        /* Slider Input */
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .slider-input {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: #404040;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider-input::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 10px;
+            background: #10a37f;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 10px rgba(16, 163, 127, 0.3);
+        }
+
+        .slider-input::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        .slider-value {
+            min-width: 45px;
+            padding: 5px 10px;
+            background: #2d2d2d;
+            border-radius: 20px;
+            text-align: center;
+            font-size: 13px;
+            border: 1px solid #404040;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: #10a37f;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+            margin-right: 10px;
+        }
+
+        .btn-primary:hover {
+            background: #0d8a6b;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(16, 163, 127, 0.3);
+        }
+
+        .btn-secondary {
+            background: #2d2d2d;
+            color: #a3a3a3;
+            border: 1px solid #404040;
+            padding: 12px 30px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+            margin-right: 10px;
+        }
+
+        .btn-secondary:hover {
+            background: #3d3d3d;
+            color: #e5e5e5;
+            border-color: #10a37f;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(239, 68, 68, 0.3);
+        }
+
+        /* API Test Section */
+        .api-test {
+            background: #2d2d2d;
+            border-radius: 16px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid #404040;
+        }
+
+        .api-status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-left: 10px;
+        }
+
+        .status-success {
+            background: rgba(16, 163, 127, 0.2);
+            color: #10a37f;
+            border: 1px solid #10a37f;
+        }
+
+        .status-error {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+        }
+
+        .status-warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+            border: 1px solid #f59e0b;
+        }
+
+        /* Backup Section */
+        .backup-actions {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 25px;
+            background: #2d2d2d;
+            border: 1px solid #404040;
+            border-radius: 12px;
+            color: #a3a3a3;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .file-label:hover {
+            border-color: #10a37f;
+            color: #10a37f;
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 12px;
+            color: white;
+            font-size: 14px;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            max-width: 350px;
+        }
+
+        .notification.success {
+            background: #10a37f;
+        }
+
+        .notification.error {
+            background: #ef4444;
+        }
+
+        .notification.info {
+            background: #3b82f6;
+        }
+
+        .notification.warning {
+            background: #f59e0b;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .settings-sidebar {
+                border-right: none;
+                border-bottom: 1px solid #2d2d2d;
+                padding: 15px 0;
+                max-height: 200px;
+            }
+
+            .settings-content {
+                padding: 25px;
+            }
+
+            .setting-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .language-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-primary, .btn-secondary, .btn-danger {
+                width: 100%;
+                margin-right: 0;
+            }
+
+            .backup-actions {
+                flex-direction: column;
+            }
+
+            .file-label {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            margin-left: 5px;
+            color: #a3a3a3;
+            cursor: help;
+        }
+
+        .tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2d2d2d;
+            color: #e5e5e5;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            white-space: nowrap;
+            border: 1px solid #404040;
+            z-index: 10;
+            margin-bottom: 5px;
+        }
+
+        /* Model Cards */
+        .model-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .model-card {
+            background: #2d2d2d;
+            border: 2px solid #404040;
+            border-radius: 16px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .model-card:hover {
+            border-color: #10a37f;
+            transform: translateY(-2px);
+        }
+
+        .model-card.active {
+            border-color: #10a37f;
+            background: rgba(16, 163, 127, 0.1);
+        }
+
+        .model-card h4 {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .model-card p {
+            font-size: 12px;
+            color: #a3a3a3;
+        }
+
+        .model-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: rgba(16, 163, 127, 0.2);
+            border-radius: 20px;
+            font-size: 10px;
+            color: #10a37f;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="settings-container">
+        <!-- Header -->
+        <div class="settings-header">
+            <h1>
+                <i class="fas fa-cog"></i>
+                Settings
+            </h1>
+            <p>Manage your account preferences and application settings</p>
+        </div>
+
+        <!-- Settings Grid -->
+        <div class="settings-grid">
+            <!-- Left Sidebar -->
+            <div class="settings-sidebar">
+                <div class="sidebar-section">
+                    <div class="sidebar-title">General</div>
+                    <div class="sidebar-item active" data-section="profile">
+                        <i class="fas fa-user"></i>
+                        Profile
+                    </div>
+                    <div class="sidebar-item" data-section="appearance">
+                        <i class="fas fa-paint-brush"></i>
+                        Appearance
+                    </div>
+                    <div class="sidebar-item" data-section="language">
+                        <i class="fas fa-language"></i>
+                        Language
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Preferences</div>
+                    <div class="sidebar-item" data-section="notifications">
+                        <i class="fas fa-bell"></i>
+                        Notifications
+                    </div>
+                    <div class="sidebar-item" data-section="privacy">
+                        <i class="fas fa-shield-alt"></i>
+                        Privacy
+                    </div>
+                    <div class="sidebar-item" data-section="ai">
+                        <i class="fas fa-robot"></i>
+                        AI Settings
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="sidebar-title">System</div>
+                    <div class="sidebar-item" data-section="backup">
+                        <i class="fas fa-database"></i>
+                        Backup & Restore
+                    </div>
+                    <div class="sidebar-item" data-section="advanced">
+                        <i class="fas fa-code"></i>
+                        Advanced
+                    </div>
+                    <div class="sidebar-item" data-section="about">
+                        <i class="fas fa-info-circle"></i>
+                        About
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Content -->
+            <div class="settings-content" id="settingsContent">
+                <!-- Profile Section -->
+                <div class="settings-section active" id="section-profile">
+                    <h2>Profile Settings</h2>
+
+                    <div class="form-group">
+                        <label>Display Name</label>
+                        <input type="text" id="displayName" class="form-control" placeholder="Enter your display name">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="email" class="form-control" placeholder="Enter your email">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Bio</label>
+                        <textarea id="bio" class="form-control" placeholder="Tell us about yourself"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Profile Picture</label>
+                        <input type="file" id="avatar" class="form-control" accept="image/*">
+                    </div>
+
+                    <button class="btn-primary" id="saveProfile">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </div>
+
+                <!-- Appearance Section -->
+                <div class="settings-section" id="section-appearance">
+                    <h2>Appearance</h2>
+
+                    <div class="setting-item">
+                        <div>
+                            <h4>Theme</h4>
+                            <p>Choose your preferred theme</p>
+                        </div>
+                        <select id="theme" class="form-control" style="width: 150px;">
+                            <option value="dark">Dark</option>
+                            <option value="light">Light</option>
+                            <option value="system">System</option>
+                        </select>
+                    </div>
+
+                    <div class="setting-item">
+                        <div>
+                            <h4>Compact Mode</h4>
+                            <p>Use compact layout for messages</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="compact">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-item">
+                        <div>
+                            <h4>Font Size</h4>
+                            <p>Adjust text size</p>
+                        </div>
+                        <select id="fontSize" class="form-control" style="width: 150px;">
+                            <option value="small">Small</option>
+                            <option value="medium">Medium</option>
+                            <option value="large">Large</option>
+                        </select>
+                    </div>
+
+                    <div class="setting-item">
+                        <div>
+                            <h4>Animations</h4>
+                            <p>Enable UI animations</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="animations" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <button class="btn-primary" id="saveAppearance">
+                        <i class="fas fa-save"></i> Save Appearance
+                    </button>
+                </div>
+
+                <!-- Language Section -->
+                <div class="settings-section" id="section-language">
+                    <h2>Language</h2>
+
+                    <div class="language-grid">
+                        <div class="language-card" data-lang="en" id="langEn">
+                            <i class="fas fa-language"></i>
+                            <h4>English</h4>
+                            <p>Default language</p>
+                        </div>
+
+                        <div class="language-card" data-lang="mm" id="langMm">
+                            <i class="fas fa-language"></i>
+                            <h4>မြန်မာ</h4>
+                            <p>Myanmar language</p>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Date Format</label>
+                        <select id="dateFormat" class="form-control" style="width: 200px;">
+                            <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                            <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                            <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                        </select>
+                    </div>
+
+                    <button class="btn-primary" id="saveLanguage">
+                        <i class="fas fa-save"></i> Apply Language
+                    </button>
+                </div>
+
+                <!-- Notifications Section -->
+                <div class="settings-section" id="section-notifications">
+                    <h2>Notifications</h2>
+
+                    <div class="setting-item">
+                        <div>
+                            <h4>Email Notifications</h4>
+                            <p>Receive updates via email</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="emailNotifications">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-item">
+                        <div>
+                            <h4>Desktop Notifications</h4>
+                            <p>Show notifications on desktop</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="desktopNotifications">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-item">
+                        <div>
+                            <h4>Sound</h4>
+                            <p>Play sound for new messages</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="soundNotifications">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-item">
+                        <div>
+                            <h4>Mention Notifications</h4>
+                            <p>Notify when someone mentions you</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="mentionNotifications" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <button class="btn-primary" id="saveNotifications">
+                        <i class="fas fa-save"></i> Save Notification Settings
+                    </button>
+
+                    <button class="btn-secondary" id="testNotification">
+                        <i class="fas fa-bell"></i> Test Notification
+                    </button>
+                </div>
+
+                <!-- Privacy Section -->
+                <div class="settings-section" id="section-privacy">
+                    <h2>Privacy</h2>
+
+                    <div class="setting-item">
+                        <div>
+                            <h4>Share Usage Data</h4>
+                            <p>Help improve the app by sharing anonymous usage data</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="shareData">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-item">
+                        <div>
+                            <h4>Save Chat History</h4>
+                            <p>Automatically save your conversations</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="saveHistory" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-item">
+                        <div>
+                            <h4>Show Online Status</h4>
+                            <p>Let others see when you're online</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="onlineStatus" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-item">
+                        <div>
+                            <h4>Read Receipts</h4>
+                            <p>Let others know when you've read their messages</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="readReceipts" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <button class="btn-primary" id="savePrivacy">
+                        <i class="fas fa-save"></i> Save Privacy Settings
+                    </button>
+
+                    <button class="btn-danger" id="clearData">
+                        <i class="fas fa-trash"></i> Clear All Data
+                    </button>
+                </div>
+
+                <!-- AI Settings Section -->
+                <div class="settings-section" id="section-ai">
+                    <h2>AI Settings</h2>
+
+                    <div class="model-cards">
+                        <div class="model-card active" data-model="gpt-4">
+                            <h4>GPT-4</h4>
+                            <p>Most capable model, best for complex tasks</p>
+                            <span class="model-badge">Recommended</span>
+                        </div>
+                        <div class="model-card" data-model="gpt-3.5">
+                            <h4>GPT-3.5</h4>
+                            <p>Faster, good for simple conversations</p>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Temperature (Creativity)</label>
+                        <div class="slider-container">
+                            <input type="range" id="aiTemp" class="slider-input" min="0" max="2" step="0.1" value="0.7">
+                            <span class="slider-value" id="tempValue">0.7</span>
+                        </div>
+                        <small style="color: #a3a3a3;">Lower = focused, Higher = creative</small>
+                    </div>
+
+                    <div class="setting-item">
+                        <div>
+                            <h4>Stream Responses</h4>
+                            <p>See responses as they're generated</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="aiStream" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Context Length</label>
+                        <select id="aiContext" class="form-control" style="width: 200px;">
+                            <option value="10">10 messages</option>
+                            <option value="20">20 messages</option>
+                            <option value="50">50 messages</option>
+                            <option value="100">100 messages</option>
+                        </select>
+                    </div>
+
+                    <div class="api-test">
+                        <h4>API Connection</h4>
+                        <div style="display: flex; align-items: center; gap: 15px; margin-top: 10px;">
+                            <span id="apiStatus">Checking connection...</span>
+                            <span class="api-status" id="apiStatusBadge">Unknown</span>
+                        </div>
+                        <button class="btn-secondary" id="testAPI" style="margin-top: 15px;">
+                            <i class="fas fa-plug"></i> Test Connection
+                        </button>
+                    </div>
+
+                    <button class="btn-primary" id="saveAI">
+                        <i class="fas fa-save"></i> Save AI Settings
+                    </button>
+                </div>
+
+                <!-- Backup & Restore Section -->
+                <div class="settings-section" id="section-backup">
+                    <h2>Backup & Restore</h2>
+
+                    <div class="backup-actions">
+                        <button class="btn-primary" id="exportData">
+                            <i class="fas fa-download"></i> Export Data
+                        </button>
+
+                        <input type="file" id="importFile" class="file-input" accept=".json">
+                        <label for="importFile" class="file-label">
+                            <i class="fas fa-upload"></i> Import Data
+                        </label>
+                    </div>
+
+                    <div style="margin-top: 30px;">
+                        <h4>Last Backup</h4>
+                        <p id="lastBackup" style="color: #a3a3a3; margin-top: 5px;">Never</p>
+                    </div>
+
+                    <div style="margin-top: 30px;">
+                        <h4>Auto Backup</h4>
+                        <div class="setting-item">
+                            <div>
+                                <p>Automatically backup data</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="autoBackup">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Advanced Section -->
+                <div class="settings-section" id="section-advanced">
+                    <h2>Advanced Settings</h2>
+
+                    <div class="setting-item">
+                        <div>
+                            <h4>Developer Mode</h4>
+                            <p>Enable developer tools and debugging</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="devMode">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label>API Endpoint</label>
+                        <input type="text" id="apiEndpoint" class="form-control" value="https://my.amkai.workers.dev">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Request Timeout (seconds)</label>
+                        <input type="number" id="timeout" class="form-control" value="30" min="5" max="120">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Cache Size (MB)</label>
+                        <input type="number" id="cacheSize" class="form-control" value="100" min="10" max="1000">
+                    </div>
+
+                    <button class="btn-danger" id="resetSettings">
+                        <i class="fas fa-undo"></i> Reset All Settings
+                    </button>
+                </div>
+
+                <!-- About Section -->
+                <div class="settings-section" id="section-about">
+                    <h2>About AmkyawDev AI</h2>
+
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <div style="width: 80px; height: 80px; background: #10a37f; border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                            <i class="fas fa-robot" style="font-size: 40px; color: white;"></i>
+                        </div>
+                        <h3 style="font-size: 24px;">Version 2.0.0</h3>
+                        <p style="color: #a3a3a3;">Built with ❤️ in Myanmar</p>
+                    </div>
+
+                    <div style="background: #2d2d2d; border-radius: 16px; padding: 20px; margin: 20px 0;">
+                        <h4>System Information</h4>
+                        <table style="width: 100%; margin-top: 15px;">
+                            <tr>
+                                <td style="padding: 8px 0; color: #a3a3a3;">App Version:</td>
+                                <td style="padding: 8px 0;">2.0.0</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px 0; color: #a3a3a3;">API Version:</td>
+                                <td style="padding: 8px 0;">v1</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px 0; color: #a3a3a3;">Browser:</td>
+                                <td style="padding: 8px 0;" id="browserInfo"></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px 0; color: #a3a3a3;">Storage Used:</td>
+                                <td style="padding: 8px 0;" id="storageUsed">Calculating...</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div style="display: flex; gap: 15px; justify-content: center; margin-top: 30px;">
+                        <a href="#" style="color: #a3a3a3; text-decoration: none;">Terms</a>
+                        <a href="#" style="color: #a3a3a3; text-decoration: none;">Privacy</a>
+                        <a href="#" style="color: #a3a3a3; text-decoration: none;">Contact</a>
+                    </div>
+
+                    <p style="text-align: center; color: #6b6b6b; margin-top: 20px; font-size: 12px;">
+                        © 2026 AmkyawDev AI. All rights reserved.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/setting.js"></script>
+</body>
+</html>

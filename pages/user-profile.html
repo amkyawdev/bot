@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - AmkyawDev AI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0f0f0f;
+            color: #e5e5e5;
+            min-height: 100vh;
+        }
+
+        .profile-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        /* Profile Cover - Static */
+        .profile-cover {
+            height: 200px;
+            background: linear-gradient(135deg, #10a37f, #0d8a6b);
+            border-radius: 25px 25px 0 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cover-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-end;
+            padding: 20px;
+        }
+
+        .cover-text {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(5px);
+            padding: 6px 15px;
+            border-radius: 30px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Profile Card */
+        .profile-card {
+            background: #1a1a1a;
+            border-radius: 0 0 25px 25px;
+            padding: 30px;
+            margin-bottom: 25px;
+            border: 1px solid #2d2d2d;
+            border-top: none;
+            position: relative;
+        }
+
+        .profile-avatar-section {
+            display: flex;
+            align-items: flex-end;
+            gap: 25px;
+            margin-top: -80px;
+            margin-bottom: 20px;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #10a37f, #0d8a6b);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            font-weight: 600;
+            color: white;
+            border: 4px solid #1a1a1a;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .profile-title {
+            flex: 1;
+            padding-bottom: 15px;
+        }
+
+        .profile-title h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: white;
+        }
+
+        .profile-title .username {
+            color: #a3a3a3;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .member-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 15px;
+            background: rgba(16, 163, 127, 0.1);
+            border: 1px solid #10a37f;
+            border-radius: 30px;
+            font-size: 12px;
+            color: #10a37f;
+        }
+
+        .member-badge i {
+            font-size: 11px;
+        }
+
+        /* Profile Stats */
+        .profile-stats {
+            display: flex;
+            gap: 40px;
+            padding: 20px 0;
+            border-top: 1px solid #2d2d2d;
+            border-bottom: 1px solid #2d2d2d;
+            margin: 20px 0;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #10a37f;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #a3a3a3;
+            margin-top: 5px;
+        }
+
+        /* Info Grid */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .info-item {
+            background: #2d2d2d;
+            padding: 15px;
+            border-radius: 15px;
+            border: 1px solid #404040;
+        }
+
+        .info-label {
+            font-size: 11px;
+            color: #a3a3a3;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-value i {
+            color: #10a37f;
+            width: 20px;
+        }
+
+        /* Bio Section */
+        .bio-section {
+            background: #2d2d2d;
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid #404040;
+            margin: 20px 0;
+        }
+
+        .bio-section h3 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: #a3a3a3;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bio-section h3 i {
+            color: #10a37f;
+        }
+
+        .bio-section p {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #e5e5e5;
+        }
+
+        /* Settings Link */
+        .settings-link {
+            width: 100%;
+            padding: 15px;
+            background: #2d2d2d;
+            color: #a3a3a3;
+            border: 1px solid #404040;
+            border-radius: 15px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 25px 0;
+            text-decoration: none;
+        }
+
+        .settings-link:hover {
+            background: #10a37f;
+            color: white;
+            border-color: #10a37f;
+        }
+
+        .settings-link i {
+            font-size: 14px;
+        }
+
+        /* Recent Activity */
+        .recent-activity {
+            margin-top: 30px;
+        }
+
+        .recent-activity h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #e5e5e5;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .recent-activity h3 i {
+            color: #10a37f;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: #2d2d2d;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            border: 1px solid #404040;
+            transition: all 0.2s;
+        }
+
+        .activity-item:hover {
+            background: #3d3d3d;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(16, 163, 127, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #10a37f;
+        }
+
+        .activity-details {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .activity-time {
+            font-size: 11px;
+            color: #a3a3a3;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .profile-avatar-section {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .profile-title {
+                text-align: center;
+            }
+
+            .profile-stats {
+                gap: 20px;
+                justify-content: center;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <!-- Cover Photo (Static) -->
+        <div class="profile-cover">
+            <div class="cover-overlay">
+                <span class="cover-text">
+                    <i class="fas fa-image"></i> Profile Cover
+                </span>
+            </div>
+        </div>
+
+        <!-- Profile Card -->
+        <div class="profile-card">
+            <div class="profile-avatar-section">
+                <div class="profile-avatar" id="profileAvatar">AK</div>
+                
+                <div class="profile-title">
+                    <h1 id="displayName">Aung Myo Kyaw</h1>
+                    <div class="username">
+                        <i class="fas fa-envelope"></i>
+                        <span id="userEmail">aung@example.com</span>
+                    </div>
+                    <span class="member-badge">
+                        <i class="fas fa-crown"></i>
+                        Pro Member
+                    </span>
+                </div>
+            </div>
+
+            <!-- Profile Stats -->
+            <div class="profile-stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="chatCount">127</div>
+                    <div class="stat-label">Total Chats</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="daysActive">89</div>
+                    <div class="stat-label">Days Active</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="avgMessages">24</div>
+                    <div class="stat-label">Avg/Day</div>
+                </div>
+            </div>
+
+            <!-- Info Grid -->
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Location</div>
+                    <div class="info-value">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span id="userLocation">Yangon, Myanmar</span>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Website</div>
+                    <div class="info-value">
+                        <i class="fas fa-globe"></i>
+                        <span id="userWebsite">amkyawdev.com</span>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Member Since</div>
+                    <div class="info-value">
+                        <i class="fas fa-calendar"></i>
+                        <span id="memberSince">January 2026</span>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Last Active</div>
+                    <div class="info-value">
+                        <i class="fas fa-clock"></i>
+                        <span id="lastActive">5 minutes ago</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bio Section -->
+            <div class="bio-section">
+                <h3><i class="fas fa-quote-right"></i> About Me</h3>
+                <p id="userBio">Developer and AI enthusiast. Building the future with code. Passionate about creating innovative solutions that make a difference.</p>
+            </div>
+
+            <!-- Link to Settings -->
+            <a href="main-setting.html" class="settings-link">
+                <i class="fas fa-cog"></i>
+                Edit Profile in Settings
+                <i class="fas fa-arrow-right"></i>
+            </a>
+
+            <!-- Recent Activity -->
+            <div class="recent-activity">
+                <h3><i class="fas fa-history"></i> Recent Activity</h3>
+                
+                <div class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas fa-comment"></i>
+                    </div>
+                    <div class="activity-details">
+                        <div class="activity-title">Chat: "How to use React hooks"</div>
+                        <div class="activity-time">2 hours ago</div>
+                    </div>
+                </div>
+
+                <div class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <div class="activity-details">
+                        <div class="activity-title">Code Assistant: Python function</div>
+                        <div class="activity-time">Yesterday</div>
+                    </div>
+                </div>
+
+                <div class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas fa-language"></i>
+                    </div>
+                    <div class="activity-details">
+                        <div class="activity-title">Translation: English to Myanmar</div>
+                        <div class="activity-time">2 days ago</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Profile System - View Only (No Edit)
+        class ProfileViewer {
+            constructor() {
+                this.loadUserData();
+                this.updateActivityStats();
+            }
+
+            loadUserData() {
+                // Load from localStorage (saved from main-setting.html)
+                const user = JSON.parse(localStorage.getItem('user') || '{}');
+                const settings = JSON.parse(localStorage.getItem('app_settings') || '{}');
+                
+                // Update UI with user data
+                document.getElementById('profileAvatar').textContent = user.initials || this.getInitials(user.name || 'Aung Myo Kyaw');
+                document.getElementById('displayName').textContent = user.displayName || user.name || 'Aung Myo Kyaw';
+                document.getElementById('userEmail').textContent = user.email || 'aung@example.com';
+                document.getElementById('userLocation').textContent = user.location || 'Yangon, Myanmar';
+                document.getElementById('userWebsite').textContent = user.website || 'amkyawdev.com';
+                document.getElementById('userBio').textContent = user.bio || 'Developer and AI enthusiast. Building the future with code.';
+                
+                // Member since (from registration or default)
+                const memberSince = user.memberSince || 'January 2026';
+                document.getElementById('memberSince').textContent = memberSince;
+                
+                // Last active
+                const lastActive = user.lastActive || '5 minutes ago';
+                document.getElementById('lastActive').textContent = lastActive;
+
+                // Stats (from localStorage or default)
+                const chatHistory = JSON.parse(localStorage.getItem('chatHistory') || '[]');
+                document.getElementById('chatCount').textContent = chatHistory.length || 127;
+                
+                // Days active (calculate from first login or default)
+                const loginTime = localStorage.getItem('login_time');
+                if (loginTime) {
+                    const days = Math.floor((Date.now() - new Date(loginTime)) / (1000 * 60 * 60 * 24));
+                    document.getElementById('daysActive').textContent = days || 89;
+                }
+                
+                // Average messages per day
+                const totalMessages = this.getTotalMessages();
+                const days = parseInt(document.getElementById('daysActive').textContent);
+                const avg = days > 0 ? Math.round(totalMessages / days) : 24;
+                document.getElementById('avgMessages').textContent = avg;
+            }
+
+            getInitials(name) {
+                if (!name) return 'AK';
+                return name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+            }
+
+            getTotalMessages() {
+                try {
+                    const chatHistory = JSON.parse(localStorage.getItem('chatHistory') || '[]');
+                    let total = 0;
+                    chatHistory.forEach(chat => {
+                        total += chat.messages?.length || 0;
+                    });
+                    return total || 127;
+                } catch (e) {
+                    return 127;
+                }
+            }
+
+            updateActivityStats() {
+                // Update last active periodically
+                setInterval(() => {
+                    const now = new Date();
+                    const hours = now.getHours();
+                    const minutes = now.getMinutes();
+                    
+                    if (Math.random() > 0.7) { // 30% chance to update
+                        document.getElementById('lastActive').textContent = 'Just now';
+                        
+                        // Save to user object
+                        const user = JSON.parse(localStorage.getItem('user') || '{}');
+                        user.lastActive = 'Just now';
+                        localStorage.setItem('user', JSON.stringify(user));
+                    }
+                }, 60000); // Check every minute
+            }
+        }
+
+        // Initialize profile viewer
+        document.addEventListener('DOMContentLoaded', () => {
+            window.profileViewer = new ProfileViewer();
+        });
+
+        // Listen for profile updates from settings
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'user' || e.key === 'app_settings') {
+                window.profileViewer.loadUserData();
+            }
+        });
+
+        // Listen for messages from parent (if in iframe)
+        window.addEventListener('message', (e) => {
+            if (e.data.type === 'profile-updated') {
+                window.profileViewer.loadUserData();
+            }
+        });
+    </script>
+</body>
+</html>

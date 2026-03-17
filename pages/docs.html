@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation - AmkyawDev AI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0f0f0f;
+            color: #e5e5e5;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .docs-app {
+            display: flex;
+            height: 100vh;
+            position: relative;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .docs-sidebar {
+            width: 300px;
+            background: #1a1a1a;
+            border-right: 1px solid #2d2d2d;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease;
+            position: relative;
+            z-index: 10;
+        }
+
+        .sidebar-header {
+            padding: 25px 20px;
+            border-bottom: 1px solid #2d2d2d;
+        }
+
+        .sidebar-header h2 {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .sidebar-header h2 i {
+            color: #10a37f;
+            font-size: 24px;
+        }
+
+        .sidebar-header p {
+            color: #a3a3a3;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        .search-box {
+            padding: 20px;
+            position: relative;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 35px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b6b6b;
+            font-size: 14px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 12px 12px 45px;
+            background: #2d2d2d;
+            border: 1px solid #404040;
+            border-radius: 30px;
+            color: #e5e5e5;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .search-box input:focus {
+            border-color: #10a37f;
+            box-shadow: 0 0 0 3px rgba(16, 163, 127, 0.1);
+        }
+
+        .search-box input::placeholder {
+            color: #6b6b6b;
+        }
+
+        .docs-nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 20px 20px;
+        }
+
+        .nav-section {
+            margin-bottom: 25px;
+        }
+
+        .nav-section-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #a3a3a3;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .nav-section-header:hover {
+            background: #2d2d2d;
+            color: #e5e5e5;
+        }
+
+        .nav-section-header i:first-child {
+            color: #10a37f;
+            font-size: 12px;
+        }
+
+        .nav-section-header i:last-child {
+            margin-left: auto;
+            font-size: 10px;
+            transition: transform 0.3s;
+        }
+
+        .nav-section-header.expanded i:last-child {
+            transform: rotate(180deg);
+        }
+
+        .nav-items {
+            margin-left: 25px;
+            margin-top: 8px;
+            display: none;
+        }
+
+        .nav-items.expanded {
+            display: block;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            color: #a3a3a3;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .nav-item:hover {
+            background: #2d2d2d;
+            color: #e5e5e5;
+        }
+
+        .nav-item.active {
+            background: #10a37f;
+            color: white;
+        }
+
+        .nav-item i {
+            font-size: 10px;
+            color: #6b6b6b;
+        }
+
+        .nav-item.active i {
+            color: white;
+        }
+
+        /* ===== CONTENT ===== */
+        .docs-content {
+            flex: 1;
+            overflow-y: auto;
+            background: #0f0f0f;
+            position: relative;
+        }
+
+        .content-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #2d2d2d;
+        }
+
+        .content-header h1 {
+            font-size: 32px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #fff, #a3a3a3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            padding: 10px 16px;
+            background: #2d2d2d;
+            border: 1px solid #404040;
+            border-radius: 30px;
+            color: #a3a3a3;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .action-btn:hover {
+            border-color: #10a37f;
+            color: #10a37f;
+            background: #1a1a1a;
+        }
+
+        .action-btn i {
+            font-size: 14px;
+        }
+
+        .markdown-content {
+            color: #e5e5e5;
+            line-height: 1.8;
+            font-size: 16px;
+        }
+
+        .markdown-content h1 {
+            font-size: 36px;
+            margin: 40px 0 20px;
+            color: #10a37f;
+        }
+
+        .markdown-content h2 {
+            font-size: 28px;
+            margin: 35px 0 15px;
+            color: #e5e5e5;
+        }
+
+        .markdown-content h3 {
+            font-size: 22px;
+            margin: 25px 0 15px;
+            color: #a3a3a3;
+        }
+
+        .markdown-content p {
+            margin-bottom: 20px;
+            color: #d1d1d1;
+        }
+
+        .markdown-content ul, .markdown-content ol {
+            margin: 20px 0 20px 30px;
+        }
+
+        .markdown-content li {
+            margin-bottom: 10px;
+            color: #d1d1d1;
+        }
+
+        .markdown-content code {
+            font-family: 'Fira Code', monospace;
+            background: #2d2d2d;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #10a37f;
+            border: 1px solid #404040;
+        }
+
+        .markdown-content pre {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 15px;
+            overflow-x: auto;
+            margin: 25px 0;
+            border: 1px solid #2d2d2d;
+        }
+
+        .markdown-content pre code {
+            background: transparent;
+            border: none;
+            padding: 0;
+            color: #e5e5e5;
+        }
+
+        .markdown-content blockquote {
+            border-left: 4px solid #10a37f;
+            padding: 15px 25px;
+            background: #1a1a1a;
+            margin: 25px 0;
+            border-radius: 0 15px 15px 0;
+            font-style: italic;
+            color: #a3a3a3;
+        }
+
+        .markdown-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+        }
+
+        .markdown-content th {
+            background: #10a37f;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        .markdown-content td {
+            padding: 12px;
+            border-bottom: 1px solid #2d2d2d;
+            font-size: 14px;
+        }
+
+        .markdown-content tr:hover {
+            background: #1a1a1a;
+        }
+
+        .markdown-content .tip {
+            background: rgba(16, 163, 127, 0.1);
+            border: 1px solid #10a37f;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 25px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .markdown-content .tip i {
+            font-size: 24px;
+            color: #10a37f;
+        }
+
+        .markdown-content .tip strong {
+            color: #10a37f;
+        }
+
+        /* Loading Skeleton */
+        .skeleton {
+            animation: skeleton-loading 1s linear infinite alternate;
+        }
+
+        @keyframes skeleton-loading {
+            0% { background-color: #2d2d2d; }
+            100% { background-color: #3d3d3d; }
+        }
+
+        .skeleton-title {
+            width: 60%;
+            height: 40px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .skeleton-line {
+            width: 100%;
+            height: 20px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        .skeleton-line:nth-child(2) { width: 90%; }
+        .skeleton-line:nth-child(3) { width: 95%; }
+        .skeleton-line:nth-child(4) { width: 85%; }
+
+        /* Mobile Toggle */
+        .mobile-toggle {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 50px;
+            height: 50px;
+            background: #10a37f;
+            border-radius: 25px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 100;
+            box-shadow: 0 5px 20px rgba(16, 163, 127, 0.3);
+            border: none;
+        }
+
+        /* Breadcrumbs */
+        .breadcrumbs {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #6b6b6b;
+        }
+
+        .breadcrumbs a {
+            color: #a3a3a3;
+            text-decoration: none;
+        }
+
+        .breadcrumbs a:hover {
+            color: #10a37f;
+        }
+
+        /* Table of Contents */
+        .toc {
+            position: fixed;
+            right: 30px;
+            top: 100px;
+            width: 250px;
+            background: #1a1a1a;
+            border: 1px solid #2d2d2d;
+            border-radius: 15px;
+            padding: 20px;
+            display: none;
+        }
+
+        .toc.visible {
+            display: block;
+        }
+
+        .toc h4 {
+            font-size: 14px;
+            margin-bottom: 15px;
+            color: #a3a3a3;
+        }
+
+        .toc-item {
+            padding: 8px 12px;
+            font-size: 12px;
+            color: #a3a3a3;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .toc-item:hover {
+            background: #2d2d2d;
+            color: #10a37f;
+        }
+
+        @media (min-width: 1400px) {
+            .toc.visible {
+                display: block;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .docs-sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                transform: translateX(-100%);
+                z-index: 90;
+                width: 280px;
+            }
+
+            .docs-sidebar.open {
+                transform: translateX(0);
+            }
+
+            .mobile-toggle {
+                display: flex;
+            }
+
+            .content-wrapper {
+                padding: 20px;
+            }
+
+            .content-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+
+            .content-header h1 {
+                font-size: 24px;
+            }
+
+            .header-actions {
+                width: 100%;
+            }
+
+            .action-btn {
+                flex: 1;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="docs-app" id="docsApp">
+        <!-- Sidebar -->
+        <div class="docs-sidebar" id="docsSidebar">
+            <div class="sidebar-header">
+                <h2>
+                    <i class="fas fa-book"></i>
+                    Documentation
+                </h2>
+                <p>Learn how to use AmkyawDev AI</p>
+            </div>
+
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search documentation...">
+            </div>
+
+            <div class="docs-nav" id="docsNav">
+                <!-- Navigation will be loaded here -->
+                <div class="loading-skeleton">
+                    <div class="skeleton skeleton-title"></div>
+                    <div class="skeleton skeleton-line"></div>
+                    <div class="skeleton skeleton-line"></div>
+                    <div class="skeleton skeleton-line"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="docs-content" id="docsContent">
+            <div class="content-wrapper" id="contentWrapper">
+                <div class="content-header">
+                    <div class="breadcrumbs" id="breadcrumbs">
+                        <a href="#">Docs</a>
+                        <i class="fas fa-chevron-right"></i>
+                        <span id="currentSection">Getting Started</span>
+                    </div>
+                    <div class="header-actions">
+                        <button class="action-btn" id="langToggle">
+                            <i class="fas fa-language"></i>
+                            <span>English</span>
+                        </button>
+                        <button class="action-btn" id="printBtn">
+                            <i class="fas fa-print"></i>
+                            <span>Print</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="markdown-content" id="markdownContent">
+                    <!-- Content will be loaded here -->
+                    <div class="loading-skeleton">
+                        <div class="skeleton skeleton-title"></div>
+                        <div class="skeleton skeleton-line"></div>
+                        <div class="skeleton skeleton-line"></div>
+                        <div class="skeleton skeleton-line"></div>
+                        <div class="skeleton skeleton-line"></div>
+                        <div class="skeleton skeleton-line"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table of Contents (Desktop) -->
+        <div class="toc" id="tableOfContents">
+            <h4>On this page</h4>
+            <div id="tocItems"></div>
+        </div>
+
+        <!-- Mobile Toggle Button -->
+        <button class="mobile-toggle" id="mobileToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+
+    <!-- Overlay for mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 80;" onclick="closeSidebar()"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.2/marked.min.js"></script>
+    
+    <script>
+        // Advanced Documentation System
+        class DocsSystem {
+            constructor() {
+                this.currentLang = localStorage.getItem('preferred_language') || 'en';
+                this.currentDoc = 'intro';
+                this.sections = [];
+                this.searchResults = [];
+                this.init();
+            }
+
+            async init() {
+                await this.loadDocs();
+                this.setupEventListeners();
+                this.loadFromURL();
+                this.initTOC();
+                hljs.highlightAll();
+            }
+
+            setupEventListeners() {
+                // Search with debounce
+                const searchInput = document.getElementById('searchInput');
+                let searchTimeout;
+                searchInput.addEventListener('input', (e) => {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(() => {
+                        this.searchDocs(e.target.value);
+                    }, 300);
+                });
+
+                // Language toggle
+                document.getElementById('langToggle').addEventListener('click', () => {
+                    this.toggleLanguage();
+                });
+
+                // Print button
+                document.getElementById('printBtn').addEventListener('click', () => {
+                    window.print();
+                });
+
+                // Mobile toggle
+                document.getElementById('mobileToggle').addEventListener('click', () => {
+                    this.toggleSidebar();
+                });
+
+                // Keyboard shortcuts
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+                        e.preventDefault();
+                        document.getElementById('searchInput').focus();
+                    }
+                    if (e.key === 'Escape') {
+                        this.closeSidebar();
+                    }
+                });
+
+                // Hash change
+                window.addEventListener('hashchange', () => {
+                    this.loadFromURL();
+                });
+            }
+
+            async loadDocs() {
+                // Simulate loading documentation
+                await new Promise(resolve => setTimeout(resolve, 500));
+
+                this.sections = [
+                    {
+                        id: 'getting-started',
+                        title: { en: 'Getting Started', mm: 'စတင်အသုံးပြုခြင်း' },
+                        icon: 'fa-rocket',
+                        expanded: true,
+                        items: [
+                            { id: 'intro', title: { en: 'Introduction', mm: 'မိတ်ဆက်' } },
+                            { id: 'installation', title: { en: 'Installation', mm: 'ထည့်သွင်းခြင်း' } },
+                            { id: 'quickstart', title: { en: 'Quick Start', mm: 'အမြန်စတင်ခြင်း' } }
+                        ]
+                    },
+                    {
+                        id: 'features',
+                        title: { en: 'Features', mm: 'အင်္ဂါရပ်များ' },
+                        icon: 'fa-star',
+                        expanded: false,
+                        items: [
+                            { id: 'chat', title: { en: 'AI Chat', mm: 'AI စကားပြော' } },
+                            { id: 'code', title: { en: 'Code Assistant', mm: 'ကုဒ်အကူ' } },
+                            { id: 'translate', title: { en: 'Translation', mm: 'ဘာသာပြန်' } },
+                            { id: 'summarize', title: { en: 'Summarization', mm: 'အကျဉ်းချုပ်' } }
+                        ]
+                    },
+                    {
+                        id: 'api',
+                        title: { en: 'API Reference', mm: 'API ကိုးကားချက်' },
+                        icon: 'fa-code',
+                        expanded: false,
+                        items: [
+                            { id: 'authentication', title: { en: 'Authentication', mm: 'စစ်မှန်ကြောင်းပြခြင်း' } },
+                            { id: 'endpoints', title: { en: 'Endpoints', mm: 'လမ်းကြောင်းများ' } },
+                            { id: 'examples', title: { en: 'Examples', mm: 'နမူနာများ' } }
+                        ]
+                    }
+                ];
+
+                this.renderNav();
+            }
+
+            renderNav() {
+                const nav = document.getElementById('docsNav');
+                nav.innerHTML = this.sections.map(section => `
+                    <div class="nav-section">
+                        <div class="nav-section-header ${section.expanded ? 'expanded' : ''}" onclick="docs.toggleSection('${section.id}')">
+                            <i class="fas ${section.icon}"></i>
+                            <span>${section.title[this.currentLang]}</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="nav-items ${section.expanded ? 'expanded' : ''}">
+                            ${section.items.map(item => `
+                                <div class="nav-item ${this.currentDoc === item.id ? 'active' : ''}" 
+                                     onclick="docs.loadDoc('${item.id}')">
+                                    <i class="fas fa-file"></i>
+                                    <span>${item.title[this.currentLang]}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            toggleSection(sectionId) {
+                const section = this.sections.find(s => s.id === sectionId);
+                if (section) {
+                    section.expanded = !section.expanded;
+                    this.renderNav();
+                }
+            }
+
+            async loadDoc(docId) {
+                this.currentDoc = docId;
+                window.location.hash = docId;
+
+                // Show loading
+                document.getElementById('markdownContent').innerHTML = `
+                    <div class="loading-skeleton">
+                        <div class="skeleton skeleton-title"></div>
+                        <div class="skeleton skeleton-line"></div>
+                        <div class="skeleton skeleton-line"></div>
+                        <div class="skeleton skeleton-line"></div>
+                    </div>
+                `;
+
+                // Simulate loading
+                await new Promise(resolve => setTimeout(resolve, 300));
+
+                // Load content
+                const content = this.getDocContent(docId);
+                document.getElementById('markdownContent').innerHTML = marked.parse(content);
+                
+                // Update breadcrumbs
+                this.updateBreadcrumbs(docId);
+                
+                // Update TOC
+                this.generateTOC();
+                
+                // Highlight code
+                hljs.highlightAll();
+
+                // Update active state
+                this.renderNav();
+            }
+
+            getDocContent(docId) {
+                const contents = {
+                    intro: {
+                        en: `
+# Introduction to AmkyawDev AI
+
+Welcome to **AmkyawDev AI**, your intelligent assistant for development tasks and daily productivity.
+
+## What is AmkyawDev AI?
+
+AmkyawDev AI is a powerful AI-powered platform that helps developers with coding, documentation, learning, and daily tasks. Built with modern AI technology, it provides intelligent responses and much more.
+
+## Key Features
+
+- **AI Chat** - Natural conversations with AI
+- **Code Assistant** - Generate and debug code
+- **Translation** - English ↔ Myanmar translation
+- **Summarization** - Summarize long texts
+
+## Quick Example
+
+\`\`\`javascript
+// Ask the AI
+const response = await api.chat({
+    message: "How do I create a React component?",
+    model: "gpt-4"
+});
+
+console.log(response.data.response);
+\`\`\`
+
+> 💡 **Tip**: Try asking "Write a Python function to sort a list"
+
+## Getting Help
+
+If you need assistance, check our:
+- [FAQ](/docs/faq)
+- [Troubleshooting Guide](/docs/troubleshooting)
+- [Contact Support](/docs/contact)
+                        `,
+                        mm: `
+# အမ်ကျော့ဒက်ဗ် အေအိုင် မိတ်ဆက်
+
+**အမ်ကျော့ဒက်ဗ် အေအိုင်** မှ ကြိုဆိုပါသည်။ ဆော့ဖ်ဝဲရေးသားသူများအတွက် ဉာဏ်ရည်တု အကူအညီပေးသည့် စနစ်ဖြစ်ပါသည်။
+
+## အမ်ကျော့ဒက်ဗ် အေအိုင် ဆိုတာဘာလဲ?
+
+အမ်ကျော့ဒက်ဗ် အေအိုင်သည် ဆော့ဖ်ဝဲရေးသားသူများအတွက် ကုဒ်ရေးခြင်း၊ စာရွက်စာတမ်းပြုစုခြင်း၊ သင်ယူခြင်းနှင့် နေ့စဉ်လုပ်ငန်းဆောင်တာများအတွက် အကူအညီပေးသော စနစ်ဖြစ်သည်။
+
+## အဓိက အင်္ဂါရပ်များ
+
+- **AI စကားပြော** - AI နှင့် သဘာဝကျကျ စကားပြောဆိုခြင်း
+- **ကုဒ်အကူ** - ကုဒ်များရေးသားခြင်းနှင့် အမှားရှာခြင်း
+- **ဘာသာပြန်** - အင်္ဂလိပ် ↔ မြန်မာ ဘာသာပြန်ခြင်း
+- **အကျဉ်းချုပ်** - ရှည်လျားသော စာများကို အကျဉ်းချုပ်ခြင်း
+
+## နမူနာ
+
+\`\`\`javascript
+// AI ကိုမေးမြန်းခြင်း
+const response = await api.chat({
+    message: "React ကွန်ပိုနင့်တစ်ခု ဘယ်လိုဖန်တီးမလဲ",
+    model: "gpt-4"
+});
+
+console.log(response.data.response);
+\`\`\`
+
+> 💡 **အကြံပြုချက်**: "Python နဲ့ list ကို sort လုပ်တဲ့ function ရေးပါ" ဟု မေးကြည့်ပါ။
+                        `
+                    }
+                };
+
+                return contents[docId]?.[this.currentLang] || contents.intro[this.currentLang];
+            }
+
+            updateBreadcrumbs(docId) {
+                for (const section of this.sections) {
+                    const item = section.items.find(i => i.id === docId);
+                    if (item) {
+                        document.getElementById('currentSection').textContent = item.title[this.currentLang];
+                        break;
+                    }
+                }
+            }
+
+            generateTOC() {
+                const content = document.getElementById('markdownContent');
+                const headings = content.querySelectorAll('h1, h2, h3');
+                const toc = document.getElementById('tocItems');
+                
+                toc.innerHTML = Array.from(headings).map(h => `
+                    <div class="toc-item" style="margin-left: ${h.tagName === 'H2' ? '10px' : h.tagName === 'H3' ? '20px' : '0'}">
+                        ${h.textContent}
+                    </div>
+                `).join('');
+            }
+
+            async searchDocs(query) {
+                if (!query.trim()) {
+                    this.renderNav();
+                    return;
+                }
+
+                const results = [];
+                for (const section of this.sections) {
+                    for (const item of section.items) {
+                        if (item.title[this.currentLang].toLowerCase().includes(query.toLowerCase())) {
+                            results.push(item);
+                        }
+                    }
+                }
+
+                // Show results in nav
+                const nav = document.getElementById('docsNav');
+                if (results.length > 0) {
+                    nav.innerHTML = `
+                        <div class="nav-section">
+                            <div class="nav-section-header">
+                                <i class="fas fa-search"></i>
+                                <span>Search Results (${results.length})</span>
+                            </div>
+                            <div class="nav-items expanded">
+                                ${results.map(item => `
+                                    <div class="nav-item" onclick="docs.loadDoc('${item.id}')">
+                                        <i class="fas fa-file"></i>
+                                        <span>${item.title[this.currentLang]}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    nav.innerHTML = '<div class="nav-section">No results found</div>';
+                }
+            }
+
+            toggleLanguage() {
+                this.currentLang = this.currentLang === 'en' ? 'mm' : 'en';
+                localStorage.setItem('preferred_language', this.currentLang);
+                
+                // Update UI
+                document.getElementById('langToggle').innerHTML = `
+                    <i class="fas fa-language"></i>
+                    <span>${this.currentLang === 'en' ? 'English' : 'မြန်မာ'}</span>
+                `;
+                
+                this.renderNav();
+                this.loadDoc(this.currentDoc);
+            }
+
+            toggleSidebar() {
+                document.getElementById('docsSidebar').classList.toggle('open');
+                document.getElementById('sidebarOverlay').style.display = 
+                    document.getElementById('docsSidebar').classList.contains('open') ? 'block' : 'none';
+            }
+
+            closeSidebar() {
+                document.getElementById('docsSidebar').classList.remove('open');
+                document.getElementById('sidebarOverlay').style.display = 'none';
+            }
+
+            loadFromURL() {
+                const hash = window.location.hash.substring(1);
+                if (hash) {
+                    this.loadDoc(hash);
+                } else {
+                    this.loadDoc('intro');
+                }
+            }
+
+            initTOC() {
+                window.addEventListener('scroll', () => {
+                    const toc = document.getElementById('tableOfContents');
+                    if (window.innerWidth >= 1400) {
+                        toc.classList.add('visible');
+                    }
+                });
+            }
+        }
+
+        // Initialize docs
+        const docs = new DocsSystem();
+        window.docs = docs;
+    </script>
+</body>
+</html>
